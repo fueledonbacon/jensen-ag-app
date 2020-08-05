@@ -1,5 +1,5 @@
-# Twitter API Graphql Toy
-Accepts a stream of Tweets and runs various simple metrics on them. These metrics can be consume via the GraphQL playground
+# Agricultural Data Playground
+Accepts datapoints from multiple sources and applies novel transformations and metrics on them. These metrics can be consume via the GraphQL playground
 
 ## Getting Started
 1. Clone this repository
@@ -43,4 +43,3 @@ The nature of GraphQL definitions makes their queries and options self-documenti
 - Node
 - GraphQL / Apollo Server
 - Mocha
-- Twitter API and client wrapper
