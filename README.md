@@ -3,7 +3,7 @@ Accepts datapoints from multiple sources and applies novel transformations and m
 
 ## Getting Started
 1. Clone this repository
-2. Add your Twitter API keys and rename `sample.env` to `.env`
+2. Add your Data API keys and rename `sample.env` to `.env`
 3. Install and run
 ```
 npm install
@@ -32,10 +32,6 @@ query{
   }
 }
 ```
-
-You should get output that looks something like this:
-
-![query screenshot](./playground_screenshot.png)
 
 The nature of GraphQL definitions makes their queries and options self-documenting, to see the various query requirements and options, simply click `Docs`, drill down to the desired data point and modify the query accordingly
 
