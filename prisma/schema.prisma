@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Grower {
+  id      Int      @id @default(autoincrement())
+  farms   Farm[]
+}
+
+model Farm {
+  id      Int     @id @default(autoincrement())
+  fields  Field[]
+}
+
+model Field {
+  id         Int         @id @default(autoincrement())
+  plantings Planting[]
+}
+
+model Planting {
+  id     Int     @id @default(autoincrement())
+  name   String
+}
+
+model Measurement{
+  id Int @id @default(autoincrement())
+  type String
+  date DateTime
+  value Float
+}
