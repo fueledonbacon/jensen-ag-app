@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^2.4.1",
     "apollo-server": "^2.9.16",
     "dotenv": "^8.2.0",
     "emoji-datasource-twitter": "^5.0.1",
@@ -18,7 +19,7 @@
     "twitter": "^1.7.1"
   },
   "devDependencies": {
-    "@prisma/cli": "^2.4.0",
+    "@prisma/cli": "^2.4.1",
     "mocha": "^7.0.0",
     "nodemon": "^2.0.2"
   }
