@@ -1,0 +1,66 @@
+@agrian = https://nextgen.agrian.com
+@email = {{$dotenv AGRIAN_USERNAME}}
+@password = {{$dotenv AGRIAN_PASSWORD}}
+### Create auth token
+# @name createSession
+POST https://nextgen.agrian.com/core/sessions
+Accept-Encoding: gzip, deflate, br
+Content-Type: application/json; charset=UTF-8
+Accept: application/json
+
+{
+    "user": {
+        "email": "{{email}}",
+        "password": "{{password}}"
+    }
+}
+
+### Create token: Example response
+# {
+#   "session": {
+#     "auth_token": "553rf29e-0b3334fac-bb00-b0af8d532636",
+#     "impersonator_id": null,
+#     "user": {
+#       "creator_id": "66044f58-236a-11e9-836b-dee9f6137e3d",
+#       "updater_id": "66044f58-236a-11e9-836b-dee9f6137e3d",
+#       "created_at": "2019-01-29T02:05:50.689Z",
+#       "updated_at": "2020-08-08T18:42:57.947Z",
+#       "deleted_at": null,
+#       ...
+
+@token={{createSession.response.body.session.auth_token}}
+
+### Create API Keys
+# @name createAPIKey
+POST https://nextgen.agrian.com/core/api_keys
+Authorization: AUTH-TOKEN {{token}}
+Accept-Encoding: gzip, deflate, br
+Content-Type: application/json; charset=UTF-8
+Accept: application/json
+
+{
+ "name": "test"
+}
+
+### Example Response: API Key
+# {
+#   "api_key": {
+#     "creator_id": "66044f58-236a-1139-836b-dee9f6137e3d",
+#     "updater_id": "66044f58-236a-11e9-836b-dee9f6137e3d",
+#     "created_at": "2020-08-09T17:22:10.618Z",
+#     "updated_at": "2020-08-09T17:22:10.618Z",
+#     "id": "6ff30c42-db9a-4f21-86a7-9a7f7a7f0e37",
+#     "name": "FoB Key",
+#     "key": "NjYwNDRmNTgtMj32YS0xMWU5LTgzNmItZGVlOW32MTM3ZTN3NmRlMWM0YWItZWY0NC00OTY3LTg3Z3MtNGNmMm3yZDk4OGJh"
+#   }
+# }
+
+@agrian_api_key={{createAPIKey.response.body.api_key.key}}
+
+### CIMIS data
+@cimis_api_key={{$dotenv CIMIS_APPKEY}}
+@cimis=http://et.water.ca.gov/api/data?appKey={{cimis_api_key}}&
+################################
+# @name cimisTest
+GET {{cimis}}targets=2,8,127&startDate=2010-01-01&endDate=2010-01-05
+Accept: application/json

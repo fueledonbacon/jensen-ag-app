@@ -6,6 +6,7 @@ const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const queryString = require('query-string');
 
 const typeDefs = gql`
   scalar Date
@@ -14,6 +15,7 @@ const typeDefs = gql`
 
   type Query{
     soilMoistureBalance(fieldId: Int!, start: Date, end: Date): SoilMoistureBalanceData
+    cimis(filters: JSONObject): JSONObject
   }
 
   type Grower{
@@ -85,7 +87,11 @@ const resolvers = {
           value: 2
         }
       ]
-    })
+    }),
+    cimis: (root, { filters }, context) => {
+      console.log(queryString.stringify(filters))
+      return filters
+    }
   },
 }
 
