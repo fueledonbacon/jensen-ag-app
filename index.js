@@ -1,13 +1,10 @@
 require('dotenv').config()
 const { ApolloServer, gql } = require('apollo-server')
-const fetch = require("node-fetch");
 const store = require('./store')
 const { GraphQLJSON, GraphQLJSONObject } = require('graphql-type-json')
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-const queryString = require('query-string');
+const controllers = require('./controllers');
 
 const typeDefs = gql`
   scalar Date
@@ -17,6 +14,7 @@ const typeDefs = gql`
   type Query{
     soilMoistureBalance(fieldId: Int!, start: Date, end: Date): SoilMoistureBalanceData
     cimis(filters: JSONObject): JSONObject
+    dailyEto(station: Int, startDate: String, endDate: String): [Float]
   }
 
   type Grower{
@@ -61,7 +59,6 @@ const typeDefs = gql`
   }
 `
 
-const fetchJson = async() => await (await fetch(arguments)).json()
 
 const resolvers = {
   Date: new GraphQLScalarType({
@@ -91,19 +88,8 @@ const resolvers = {
         }
       ]
     }),
-    cimis: async (root, { filters }) => {
-      filters.appKey = process.env.CIMIS_APPKEY
-      const filterQuery = queryString.stringify(filters, { arrayFormat: 'comma' })
-      const requestURI = `${process.env.CIMIS_HOST}?${filterQuery}`
-
-      const cimisData = await (await fetch(requestURI, {
-        method: 'GET',
-        headers: {
-          "Accept": "application/json"
-        }
-      })).json()
-      return cimisData
-    }
+    cimis: controllers.cimisFetch,
+    dailyEto: controllers.dailyEto
   },
 }
 
