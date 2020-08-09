@@ -1,7 +1,7 @@
 {
-  "name": "twitter-exercise",
+  "name": "ag-data-playground",
   "version": "1.0.0",
-  "description": "Sampling the Twitter stream and calculating various statistics",
+  "description": "Data playground for agricultural data",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
@@ -13,10 +13,9 @@
   "dependencies": {
     "@prisma/client": "^2.4.1",
     "apollo-server": "^2.9.16",
+    "csv": "^5.3.2",
     "dotenv": "^8.2.0",
-    "emoji-datasource-twitter": "^5.0.1",
-    "express": "^4.17.1",
-    "twitter": "^1.7.1"
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "@prisma/cli": "^2.4.1",
