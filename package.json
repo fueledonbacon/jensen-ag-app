@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@prisma/cli": "^2.4.1",
+    "graphql-type-json": "^0.3.2",
     "mocha": "^7.0.0",
     "nodemon": "^2.0.2"
   }
