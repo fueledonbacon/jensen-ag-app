@@ -1,5 +1,6 @@
 require('dotenv').config()
 const { ApolloServer, gql } = require('apollo-server')
+const fetch = require("node-fetch");
 const store = require('./store')
 const { GraphQLJSON, GraphQLJSONObject } = require('graphql-type-json')
 const { GraphQLScalarType } = require('graphql');
@@ -60,6 +61,8 @@ const typeDefs = gql`
   }
 `
 
+const fetchJson = async() => await (await fetch(arguments)).json()
+
 const resolvers = {
   Date: new GraphQLScalarType({
     name: 'Date',
@@ -88,9 +91,18 @@ const resolvers = {
         }
       ]
     }),
-    cimis: (root, { filters }, context) => {
-      console.log(queryString.stringify(filters))
-      return filters
+    cimis: async (root, { filters }) => {
+      filters.appKey = process.env.CIMIS_APPKEY
+      const filterQuery = queryString.stringify(filters, { arrayFormat: 'comma' })
+      const requestURI = `${process.env.CIMIS_HOST}?${filterQuery}`
+
+      const cimisData = await (await fetch(requestURI, {
+        method: 'GET',
+        headers: {
+          "Accept": "application/json"
+        }
+      })).json()
+      return cimisData
     }
   },
 }
