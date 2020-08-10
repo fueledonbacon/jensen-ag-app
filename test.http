@@ -64,3 +64,17 @@ Accept: application/json
 # @name cimisTest
 GET {{cimis}}targets=2,8,127&startDate=2010-01-01&endDate=2010-01-05
 Accept: application/json
+
+################################
+# @name commodityLocations
+GET {{agrian}}/records/commodity_locations
+Authorization: API-KEY {{agrian_api_key}}
+Accept: application/json
+Content-Type: application/json; charset=UTF-8
+
+################################
+# @name listFields
+GET {{agrian}}/core/fields
+Authorization: API-KEY {{agrian_api_key}}
+Accept: application/json
+Content-Type: application/json; charset=UTF-8
