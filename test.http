@@ -42,6 +42,14 @@ Accept: application/json
  "name": "test"
 }
 
+### Get API Keys
+# @name getAPIKeys
+GET https://nextgen.agrian.com/core/api_keys
+Authorization: AUTH-TOKEN {{token}}
+Accept-Encoding: gzip, deflate, br
+Content-Type: application/json; charset=UTF-8
+Accept: application/json
+
 ### Example Response: API Key
 # {
 #   "api_key": {
@@ -55,7 +63,8 @@ Accept: application/json
 #   }
 # }
 
-@agrian_api_key={{createAPIKey.response.body.api_key.key}}
+@agrian_api_key_created={{createAPIKey.response.body.api_key.key}}
+@agrian_api_key={{$dotenv AGRIAN_API_KEY}}
 
 ### CIMIS data
 @cimis_api_key={{$dotenv CIMIS_APPKEY}}
@@ -75,6 +84,20 @@ Content-Type: application/json; charset=UTF-8
 ################################
 # @name listFields
 GET {{agrian}}/core/fields
+Authorization: API-KEY {{agrian_api_key}}
+Accept: application/json
+Content-Type: application/json; charset=UTF-8
+
+################################
+# @name listPlantings
+GET {{agrian}}/core/plantings
+Authorization: API-KEY {{agrian_api_key}}
+Accept: application/json
+Content-Type: application/json; charset=UTF-8
+
+################################
+# @name fieldSamples
+GET {{agrian}}/field_samples/sample_events
 Authorization: API-KEY {{agrian_api_key}}
 Accept: application/json
 Content-Type: application/json; charset=UTF-8
