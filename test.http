@@ -73,6 +73,10 @@ Accept: application/json
 # @name cimisTest
 GET {{cimis}}targets=2,8,127&startDate=2010-01-01&endDate=2010-01-05
 Accept: application/json
+################################
+# @name cimisLatLong
+GET {{cimis}}targets=lat=37.24,lng=-121.01&startDate=2020-07-01&endDate=2020-07-15
+Accept: application/json
 
 ################################
 # @name commodityLocations
