@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -24,7 +24,6 @@ model Farm {
   location   Location?  @relation(fields: [locationId], references: [id])
   grower     Grower     @relation(fields: [growerId], references: [id])
   growerId   Int
-  meta       Json
   Planting   Planting[]
   locationId Int?
 }
@@ -38,7 +37,6 @@ model Field {
   long                   Float
   soil_type              String
   water_holding_capacity Float
-  meta                   Json
   farm                   Farm       @relation(fields: [farmId], references: [id])
   farmId                 Int
   locationId             Int?
@@ -51,7 +49,6 @@ model Planting {
   measurements Measurement[]
   field        Field          @relation(fields: [fieldId], references: [id])
   fieldId      Int
-  meta         Json
 }
 
 model Location {
