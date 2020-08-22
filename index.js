@@ -1,7 +1,7 @@
 require('dotenv').config()
 const { ApolloServer, gql } = require('apollo-server')
 const store = require('./store')
-const { GraphQLJSON, GraphQLJSONObject } = require('graphql-type-json')
+const { GraphQLJSON } = require('graphql-type-json')
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
 const controllers = require('./controllers');
@@ -9,46 +9,45 @@ const controllers = require('./controllers');
 const typeDefs = gql`
   scalar Date
   scalar JSON
-  scalar JSONObject
 
   type Query{
-    soilMoistureBalance(fieldId: Int!, start: Date, end: Date): SoilMoistureBalanceData
-    cimis(filters: JSONObject): JSONObject
-    dailyEto(station: Int, startDate: String, endDate: String): [Float]
-  }
-
-  type Grower{
-    id: ID!
-    name: String,
-    farms: [Farm]
-  }
-
-  type Farm{
-    id: ID!
-    fields: [Field]
-    name: String
+    soilMoistureBalance(field: String, date: Date): SoilMoistureBalanceData
+    cimis(filters: JSON): JSON
+    eto(lat: Float, long: Float, startDate: String, endDate: String): [Float]
+    fields(attrs: [String], limit: Int): JSON
+    farms(attrs: [String], limit: Int): JSON
+    growers(attrs: [String], limit: Int): JSON
+    plantings(attrs: [String], limit: Int): JSON
+    getField(agrian_id: String, start_date: String, end_date: String): Field
   }
 
   type Field{
     id: ID!
-    plantings: [Planting]
-  }
-
-  type Planting{
-    id: ID!
+    agrian_id: String
+    agrian_data: JSON
+    start_date: Date
+    irrigation_rate_in_hr: Float
+    mad: Float
+    irrigation_efficiency: Float
+    etc: [Float]
+    eto: [Float]
+    smb: [Float]
     name: String
-    type: String
-    variety: String
-    plantingDate: Date
+    lat: Float
+    long: Float
+    soil_type: String
+    water_holding_capacity: Float
+    avg_gpm: Int
+    du: Float
+    area: Float
+    wetted_area_percent: Float
+    pre_infiltration_losses: Float
+    canopy_cover_percent: Float
+    soil_holding_capacity: Float
+    rooting_depth: Float
+    mad_percent: Float
   }
-
-  type Measurement{
-    id: ID!
-    type: String
-    date: Date
-    value: Float
-  }
-
+  
   type SoilMoistureBalanceData{
     data: [TimeSeriesDatapoint]
   }
@@ -78,7 +77,6 @@ const resolvers = {
     },
   }),
   JSON: GraphQLJSON,
-  JSONObject: GraphQLJSONObject,
   Query: {
     soilMoistureBalance: () => ({
       data: [
@@ -89,7 +87,12 @@ const resolvers = {
       ]
     }),
     cimis: controllers.cimisFetch,
-    dailyEto: controllers.dailyEto
+    eto: controllers.eto,
+    fields: controllers.agrianFetch("/core/fields", "fields"),
+    farms: controllers.agrianFetch("/core/farms", "farms"),
+    growers: controllers.agrianFetch("/core/growers", "growers"),
+    plantings: controllers.agrianFetch("/core/plantings", "plantings"),
+    getField: controllers.getField,
   },
 }
 

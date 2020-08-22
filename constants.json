@@ -1,48 +1,48 @@
 {
   "kc": {
     "almonds": {
-      "almond_production_manual_1996": {
-        "january": null,
-        "february": null,
-        "march": 0.54,
-        "april": 0.63,
-        "may": 0.76,
-        "june": 0.85,
-        "july": 0.94,
-        "august": 0.94,
-        "september": 0.93,
-        "october": 0.82,
-        "november": 0.70,
-        "december": null
-      },
-      "sanden_2007": {
-        "january": null,
-        "february": null,
-        "march": 0.59,
-        "april": 0.78,
-        "may": 0.92,
-        "june": 1.01,
-        "july": 1.08,
-        "august": 1.08,
-        "september": 1.02,
-        "october": 0.89,
-        "november": 0.69,
-        "december": null
-      },
-      "goldhamer_2012": {
-        "january": null,
-        "february": null,
-        "march": 0.20,
-        "april": 0.67,
-        "may": 0.95,
-        "june": 1.09,
-        "july": 1.15,
-        "august": 1.17,
-        "september": 1.12,
-        "october": 0.85,
-        "november": null,
-        "december": null
-      }
+      "almond_production_manual_1996": [
+        null,
+        null,
+        0.54,
+        0.63,
+        0.76,
+        0.85,
+        0.94,
+        0.94,
+        0.93,
+        0.82,
+        0.70,
+        null
+      ],
+      "sanden_2007": [
+        null,
+        null,
+        0.59,
+        0.78,
+        0.92,
+        1.01,
+        1.08,
+        1.08,
+        1.02,
+        0.89,
+        0.69,
+        null
+      ],
+      "goldhamer_2012": [
+        null,
+        null,
+        0.20,
+        0.67,
+        0.95,
+        1.09,
+        1.15,
+        1.17,
+        1.12,
+        0.85,
+        null,
+        null
+      ]
     }
   }
 }

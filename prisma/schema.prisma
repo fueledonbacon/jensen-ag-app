@@ -10,68 +10,22 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Grower {
-  id    Int    @id @default(autoincrement())
-  farms Farm[]
-  name  String
-  auth  String @unique
-}
-
-model Farm {
-  id         Int        @id @default(autoincrement())
-  fields     Field[]
-  name       String
-  location   Location?  @relation(fields: [locationId], references: [id])
-  grower     Grower     @relation(fields: [growerId], references: [id])
-  growerId   Int
-  Planting   Planting[]
-  locationId Int?
-}
-
 model Field {
-  id                     Int        @id @default(autoincrement())
-  plantings              Planting[]
-  name                   String
-  location               Location?  @relation(fields: [locationId], references: [id])
-  lat                    Float
-  long                   Float
-  soil_type              String
-  water_holding_capacity Float
-  farm                   Farm       @relation(fields: [farmId], references: [id])
-  farmId                 Int
-  locationId             Int?
-}
-
-model Planting {
-  id           Int           @id @default(autoincrement())
-  name         String
-  planted_at   DateTime
-  measurements Measurement[]
-  field        Field          @relation(fields: [fieldId], references: [id])
-  fieldId      Int
-}
-
-model Location {
-  id          Int           @id @default(autoincrement())
-  lat         Float
-  long        Float
-  name        String?
-  Farm        Farm[]
-  Field       Field[]
-  Measurement Measurement[]
-}
-
-model Measurement {
-  id         Int       @id @default(autoincrement())
-  type       String
-  source     String
-  date       DateTime
-  value      Float
-  unit       String
-  location   Location? @relation(fields: [locationId], references: [id])
-  lat        Float
-  long       Float
-  Planting   Planting? @relation(fields: [plantingId], references: [id])
-  plantingId Int?
-  locationId Int?
+  id                      Int      @id @default(autoincrement())
+  agrian_id               String   @unique
+  name                    String
+  lat                     Float
+  long                    Float
+  soil_type               String
+  water_holding_capacity  Float
+  avg_gpm                 Int
+  du                      Float
+  area                    Float
+  wetted_area_percent     Float
+  pre_infiltration_losses Float
+  canopy_cover_percent    Float
+  soil_holding_capacity   Float
+  rooting_depth           Float
+  start_date              DateTime
+  mad_percent             Float
 }

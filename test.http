@@ -39,7 +39,7 @@ Content-Type: application/json; charset=UTF-8
 Accept: application/json
 
 {
- "name": "test"
+ "name": "server"
 }
 
 ### Get API Keys
