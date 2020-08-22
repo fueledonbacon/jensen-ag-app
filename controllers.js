@@ -56,17 +56,13 @@ controllers.agrianFetch = (endpoint, topLevelKey) => async (root, { attrs, limit
 
   let arr = get(data, topLevelKey, [])
   if (Array.isArray(attrs) && attrs.length > 0) {
-    let result = new Array(arr.length)
     for (let i = 0; i < arr.length; i++) {
       let record = {}
       for (const key of attrs) {
         record[key] = get(arr[i], key, null)
       }
-      result[i] = record
+      arr[i] = record
     }
-
-    return (limit > -1) ? result.slice(0, limit) : result
   }
-
   return (limit > -1) ? arr.slice(0, limit) : arr
 }
