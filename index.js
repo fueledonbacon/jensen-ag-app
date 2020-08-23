@@ -8,8 +8,10 @@ const utilities = require('./utilities')
 const bodyParser = require('body-parser')
 const express = require('express')
 const { ApolloServer, gql } = require('apollo-server-express')
+const path = require('path')
 const app = express()
 app.use(bodyParser.json())
+app.use('/', express.static(path.join(__dirname, 'app/dist')))
 
 const typeDefs = gql`
   scalar Date
@@ -117,7 +119,7 @@ const schema = new ApolloServer({
 schema.applyMiddleware({ app })
 
 app.get('/', (req, res) => {
-  res.send("Soon there will be graphs here")
+  res.sendFile(path.join(__dirname, 'app', 'dist', 'index.html'))
 })
 
 app.listen(process.env.PORT,() => {
