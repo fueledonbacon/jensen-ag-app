@@ -11,21 +11,32 @@ generator client {
 }
 
 model Field {
-  id                      Int      @id @default(autoincrement())
-  agrian_id               String   @unique
+  id                      Int          @id @default(autoincrement())
+  agrian_id               String       @unique
   name                    String
   lat                     Float
   long                    Float
-  soil_type               String
-  water_holding_capacity  Float
-  avg_gpm                 Int
-  du                      Float
+  soil_type               String?
+  water_holding_capacity  Float?
+  avg_gpm                 Int?
+  du                      Float?
   area                    Float
-  wetted_area_percent     Float
-  pre_infiltration_losses Float
-  canopy_cover_percent    Float
-  soil_holding_capacity   Float
-  rooting_depth           Float
-  start_date              DateTime
-  mad_percent             Float
+  wetted_area_percent     Float?
+  pre_infiltration_losses Float?
+  canopy_cover_percent    Float?
+  soil_holding_capacity   Float?
+  rooting_depth           Float?
+  start_date              DateTime?
+  mad_percent             Float?
+  kc_type                 String?       @default("")
+  water_events            WaterEvent[]
+}
+
+model WaterEvent {
+  id              Int      @id @default(autoincrement())
+  type            String
+  date            DateTime @default(now())
+  duration_hours  Int
+  agrian_field_id String   @default("")
+  field           Field    @relation(fields: [agrian_field_id], references: [agrian_id])
 }

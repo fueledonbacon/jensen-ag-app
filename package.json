@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "api:debug": "nodemon --inspect-brk index.js",
+    "api:dev": "nodemon index.js",
+    "api": "node index.js",
+    "studio": "prisma studio --experimental"
   },
   "author": "",
   "license": "ISC",
