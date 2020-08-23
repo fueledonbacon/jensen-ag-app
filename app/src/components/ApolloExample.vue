@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { justDate } from '../utilities.js'
 import GetSoilMoistureBalance from '../graphql/GetSoilMoistureBalance.gql'
 export default {
   apollo: {
@@ -65,14 +66,15 @@ export default {
     },
   },
   data() {
+    const today = justDate(new Date())
     return {
       field_id: "3e803653-e24e-4524-9550-d79ab268137b",
       start_date: "2020-03-22",
-      end_date: "2020-03-31",
+      end_date: today,
       query: {
         field_id: "3e803653-e24e-4524-9550-d79ab268137b",
         start_date: "2020-03-22",
-        end_date: "2020-03-31",
+        end_date: today,
       },
     };
   },
