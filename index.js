@@ -1,11 +1,15 @@
 require('dotenv').config()
-const { ApolloServer, gql } = require('apollo-server')
 const store = require('./store')
 const { GraphQLJSON } = require('graphql-type-json')
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
 const controllers = require('./controllers');
 const utilities = require('./utilities')
+const bodyParser = require('body-parser')
+const express = require('express')
+const { ApolloServer, gql } = require('apollo-server-express')
+const app = express()
+app.use(bodyParser.json())
 
 const typeDefs = gql`
   scalar Date
@@ -101,13 +105,21 @@ const resolvers = {
   }
 }
 
-const server = new ApolloServer({
+const schema = new ApolloServer({
   typeDefs,
   resolvers,
-  playground: true,
+  playground: {
+    endpoint: '/graphql'
+  },
   context: store
 })
 
-server.listen(process.env.PORT).then(() => {
+schema.applyMiddleware({ app })
+
+app.get('/', (req, res) => {
+  res.send("Soon there will be graphs here")
+})
+
+app.listen(process.env.PORT,() => {
   console.log(`Listening on ${process.env.PORT}`)
 })
