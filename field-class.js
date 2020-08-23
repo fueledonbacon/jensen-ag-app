@@ -27,8 +27,8 @@ module.exports = class Field {
 
   constructor(field, startDate, endDate) {
     Object.assign(this, field)
-    this.startDate = startDate
-    this.endDate = endDate
+    this.startDate = startDate || this.start_date
+    this.endDate = endDate || utilities.justDate(new Date())
     this.cache = new Map()
   }
 
