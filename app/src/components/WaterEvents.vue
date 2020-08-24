@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Create Water Events</h1>
+    <h1>Create Water Event</h1>
     <v-select
       v-model="field"
       :items="fields"
