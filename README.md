@@ -11,31 +11,10 @@ npm start
 ```
 4. Go to GraphQL playground in browser at `http://localhost:3000/graphql`
 5. Try this example query in the playground
-  
-```
-query{
-  totalTweetsReceived
-  tweetsPer{
-    hour
-    minute
-    second
-  }
-  top{
-    emojis
-    photos
-    hashtags
-  }
-  percentageContaining{
-    photos
-    emojis
-    domains
-  }
-}
-```
-
-The nature of GraphQL definitions makes their queries and options self-documenting, to see the various query requirements and options, simply click `Docs`, drill down to the desired data point and modify the query accordingly
 
 ## Technologies Used
 - Node
 - GraphQL / Apollo Server
+- Prisma
+- Vue.js
 - Mocha
