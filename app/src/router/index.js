@@ -1,23 +1,27 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Fields from '../components/Fields'
+import WaterEvents from '../components/WaterEvents'
+import SoilMoistureBalance from '../components/SoilMoistureBalance';
 
 Vue.use(VueRouter)
 
-  const routes = [
+const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'SoilMoistureBalance',
+    component: SoilMoistureBalance
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+    path: '/fields',
+    name: 'Edit Fields',
+    component: Fields
+  },
+  {
+    path: '/water-events',
+    name: 'Water Events',
+    component: WaterEvents
+  },
 ]
 
 const router = new VueRouter({

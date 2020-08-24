@@ -26,6 +26,7 @@ const typeDefs = gql`
     growers(attrs: [String], limit: Int): JSON
     plantings(attrs: [String], limit: Int): JSON
     getField(agrian_id: String, start_date: String, end_date: String): Field
+    listFields: [Field]
   }
 
   type Mutation{
@@ -101,6 +102,7 @@ const resolvers = {
     // growers: controllers.agrianFetch("/core/growers", "growers"),
     // plantings: controllers.agrianFetch("/core/plantings", "plantings"),
     getField: controllers.getField,
+    listFields: controllers.listFields
   },
   Mutation: {
     syncFields: controllers.syncFields

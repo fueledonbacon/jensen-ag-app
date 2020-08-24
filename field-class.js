@@ -24,6 +24,11 @@ module.exports = class Field {
     const data = await prisma.field.findOne({ where: { agrian_id }, include: {water_events: true} })
     return data
   }
+  static async listAll(withWaterEvents = false){
+    const options = withWaterEvents ? { include: {water_events: true} } : {}
+    const data = await prisma.field.findMany(options)
+    return data
+  }
 
   constructor(field, startDate, endDate) {
     Object.assign(this, field)

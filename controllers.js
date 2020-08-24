@@ -57,6 +57,14 @@ controllers.getField = async (root, { agrian_id, start_date, end_date }) => {
   return new FieldClass(fieldData, start_date, end_date)
 }
 
+controllers.listFields = async () => {
+  let data = await FieldClass.listAll()
+  for(let i = 0; i < data.length; i++){
+    data[i] = new FieldClass(data[i])
+  }
+  return data
+}
+
 controllers.agrianFetch = (endpoint, topLevelKey) => async (root, { attrs, limit = -1 }) => {
   const requestURI = `${process.env.AGRIAN_HOST}${endpoint}`
 
@@ -73,6 +81,7 @@ controllers.agrianFetch = (endpoint, topLevelKey) => async (root, { attrs, limit
   }
   return (limit > -1) ? arr.slice(0, limit) : arr
 }
+
 controllers.agrianFetchRecord = (endpoint, topLevelKey = "") => async (root, { id, attrs }) => {
   const requestURI = `${process.env.AGRIAN_HOST}${endpoint}/${id}`
 

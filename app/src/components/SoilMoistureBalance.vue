@@ -3,7 +3,7 @@
     <!-- Cute tiny form -->
     <div class="form">
       <label for="field-id" class="label">Field ID</label>
-      <input v-model="field_id" placeholder="Enter field ID" class="input" id="field-id" />
+      <v-select :items="fields" v-model="field_id"/>
       <label for="start-date" class="label">Start Date</label>
       <input v-model="start_date" placeholder="yyyy-mm-dd" class="input" id="start-date" />
       <label for="end-date" class="label">End Date</label>
@@ -29,11 +29,14 @@
 
 <script>
 import { justDate } from '../utilities.js'
-import GetSoilMoistureBalance from '../graphql/GetSoilMoistureBalance.gql'
 export default {
   apollo: {
+    listFields: {
+      query: require('../graphql/ListFields.gql'),
+      update: (data) => data.listFields
+    },
     chartData: {
-      query: GetSoilMoistureBalance,
+      query: require('../graphql/GetSoilMoistureBalance.gql'),
       variables() {
         return {
           start_date: this.query.start_date,
@@ -45,6 +48,13 @@ export default {
     }
   },
   computed: {
+    fields(){
+      if(!this.listFields) return []
+      return this.listFields.map(field =>({
+        text: field.name,
+        value: field.agrian_id
+      }))
+    },
     chartOptions() {
       return {
         chart: {
