@@ -2,34 +2,40 @@
   <div class="apollo-example">
     <!-- Cute tiny form -->
     <div class="form">
-      <label for="field-id" class="label">Field ID</label>
-      <v-select :items="fields" v-model="field" />
-      <div>
-        <label for="start-date" class="label">Start Date</label>
-        <input v-model="field.start_date" placeholder="yyyy-mm-dd" class="input" id="start-date" />
-      </div>
-      <div>
-        <label for="end-date" class="label">End Date</label>
-        <input v-model="end_date" placeholder="yyyy-mm-dd" class="input" id="end-date" />
-      </div>
-      <div>
-        <v-btn @click="updateQuery">Fetch</v-btn>
-      </div>
+      <v-select
+        :items="fields"
+        v-model="field"
+        label="Field"
+      />
+      <v-row>
+        <v-col>
+          <v-date-picker v-model="range" label="Dates" range/>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-btn @click="updateQuery">Fetch</v-btn>
+        </v-col>
+      </v-row>
     </div>
 
-    <!-- Loading -->
-    <div v-if="$apollo.loading" class="loading apollo">Loading...</div>
+    <v-row>
+      <v-col>
+        <!-- Loading -->
+        <div v-if="$apollo.loading" class="loading apollo">Loading...</div>
 
-    <!-- Error -->
-    <div v-else-if="$apollo.error" class="error apollo">An error occured</div>
+        <!-- Error -->
+        <div v-else-if="$apollo.error" class="error apollo">An error occured</div>
 
-    <!-- Result -->
-    <div v-else-if="$apollo.queries.chartData" class="result apollo">
-      <apexchart width="800" type="line" :options="this.chartOptions" :series="this.series" />
-    </div>
+        <!-- Result -->
+        <div v-else-if="$apollo.queries.chartData" class="result apollo">
+          <apexchart width="800" type="line" :options="this.chartOptions" :series="this.series" />
+        </div>
 
-    <!-- No result -->
-    <div v-else class="no-result apollo">No result :(</div>
+        <!-- No result -->
+        <div v-else class="no-result apollo">No result :(</div>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -88,11 +94,11 @@ export default {
   data() {
     const today = justDate(new Date());
     return {
+      range: ["2020-03-22", today],
       field: {
         agrian_id: "3e803653-e24e-4524-9550-d79ab268137b",
         start_date: "2020-03-22",
       },
-      end_date: today,
       query: {
         field_id: "3e803653-e24e-4524-9550-d79ab268137b",
         start_date: "2020-03-22",
@@ -103,8 +109,8 @@ export default {
   methods: {
     updateQuery() {
       this.query = {
-        start_date: this.field.start_date,
-        end_date: this.end_date,
+        start_date: this.range[0],
+        end_date: this.range[1],
         field_id: this.field.agrian_id,
       };
     },

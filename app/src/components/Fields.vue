@@ -5,6 +5,7 @@
       v-model="field"
       :items="fields"
       @change="updateFormFields(field)"
+      label="Field"
     />
     <v-date-picker v-model="update.start_date" label="Start of SMB measurements"/>
     <v-select :items="plantings" v-model.number="update.kc_type" label="Planting Type"/>
