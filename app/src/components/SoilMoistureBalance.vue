@@ -3,12 +3,18 @@
     <!-- Cute tiny form -->
     <div class="form">
       <label for="field-id" class="label">Field ID</label>
-      <v-select :items="fields" v-model="field_id"/>
-      <label for="start-date" class="label">Start Date</label>
-      <input v-model="start_date" placeholder="yyyy-mm-dd" class="input" id="start-date" />
-      <label for="end-date" class="label">End Date</label>
-      <input v-model="end_date" placeholder="yyyy-mm-dd" class="input" id="end-date" />
-      <v-btn @click="updateQuery">Fetch</v-btn>
+      <v-select :items="fields" v-model="field" />
+      <div>
+        <label for="start-date" class="label">Start Date</label>
+        <input v-model="field.start_date" placeholder="yyyy-mm-dd" class="input" id="start-date" />
+      </div>
+      <div>
+        <label for="end-date" class="label">End Date</label>
+        <input v-model="end_date" placeholder="yyyy-mm-dd" class="input" id="end-date" />
+      </div>
+      <div>
+        <v-btn @click="updateQuery">Fetch</v-btn>
+      </div>
     </div>
 
     <!-- Loading -->
@@ -28,15 +34,15 @@
 </template>
 
 <script>
-import { justDate } from '../utilities.js'
+import { justDate } from "../utilities.js";
 export default {
   apollo: {
     listFields: {
-      query: require('../graphql/ListFields.gql'),
-      update: (data) => data.listFields
+      query: require("../graphql/ListFields.gql"),
+      update: (data) => data.listFields,
     },
     chartData: {
-      query: require('../graphql/GetSoilMoistureBalance.gql'),
+      query: require("../graphql/GetSoilMoistureBalance.gql"),
       variables() {
         return {
           start_date: this.query.start_date,
@@ -44,16 +50,20 @@ export default {
           field_id: this.query.field_id,
         };
       },
-      update: (data) => data.getField
-    }
+      update: (data) => data.getField,
+    },
   },
   computed: {
-    fields(){
-      if(!this.listFields) return []
-      return this.listFields.map(field =>({
+    fields() {
+      if (!this.listFields) return [];
+      return this.listFields.map((field) => ({
         text: field.name,
-        value: field.agrian_id
-      }))
+        value: {
+          name: field.name,
+          agrian_id: field.agrian_id,
+          start_date: field.start_date,
+        },
+      }));
     },
     chartOptions() {
       return {
@@ -62,24 +72,26 @@ export default {
         },
         xaxis: {
           type: "datetime",
-          categories: this.getCategories() 
+          categories: this.getCategories(),
         },
         yaxis: {
           labels: {
-            formatter: (value) => Number(value).toFixed(2)
-          }
-        }
+            formatter: (value) => Number(value).toFixed(2),
+          },
+        },
       };
     },
     series() {
-      return this.getSeries()
+      return this.getSeries();
     },
   },
   data() {
-    const today = justDate(new Date())
+    const today = justDate(new Date());
     return {
-      field_id: "3e803653-e24e-4524-9550-d79ab268137b",
-      start_date: "2020-03-22",
+      field: {
+        agrian_id: "3e803653-e24e-4524-9550-d79ab268137b",
+        start_date: "2020-03-22",
+      },
       end_date: today,
       query: {
         field_id: "3e803653-e24e-4524-9550-d79ab268137b",
@@ -91,23 +103,24 @@ export default {
   methods: {
     updateQuery() {
       this.query = {
-        start_date: this.start_date,
+        start_date: this.field.start_date,
         end_date: this.end_date,
-        field_id: this.field_id,
+        field_id: this.field.agrian_id,
       };
     },
     getCategories() {
-      if(this.$apollo.queries.chartData.loading)
-        return []
+      if (this.$apollo.queries.chartData.loading) return [];
       let categories = this.chartData.smb.map(({ date }) => date);
-      return categories
+      return categories;
     },
     getSeries() {
-      if(this.$apollo.queries.chartData.loading)
-        return [{
-          name: "Loading",
-          data: []
-        }]
+      if (this.$apollo.queries.chartData.loading)
+        return [
+          {
+            name: "Loading",
+            data: [],
+          },
+        ];
       let smb = this.chartData.smb.map(({ value }) => value);
       let mad = new Array(smb.length).fill(this.chartData.mad);
       return [

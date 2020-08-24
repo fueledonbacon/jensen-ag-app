@@ -65,6 +65,7 @@ controllers.listFields = async () => {
   return data
 }
 
+
 controllers.agrianFetch = (endpoint, topLevelKey) => async (root, { attrs, limit = -1 }) => {
   const requestURI = `${process.env.AGRIAN_HOST}${endpoint}`
 
@@ -127,4 +128,28 @@ controllers.syncFields = async () => {
     })
   }
   return 'OK'
+}
+
+controllers.updateField = async (root, {id, update}) => {
+  return await prisma.field.update({
+    where: {
+      agrian_id: id
+    },
+    data: update
+  })
+}
+
+controllers.createWaterEvent = async (root, {inputs}) => {
+  return await prisma.waterEvent.create({
+    data: {
+      date: inputs.date,
+      type: inputs.type,
+      duration_hours: inputs.duration_hours,
+      field: {
+        connect: {
+          agrian_id: inputs.agrian_field_id
+        }
+      }
+    }
+  })
 }

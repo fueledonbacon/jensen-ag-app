@@ -1,0 +1,9 @@
+
+mutation CreateWaterEvent($inputs: WaterEventInput){
+  createWaterEvent(inputs: $inputs){
+    agrian_field_id
+    duration_hours
+    type
+    date
+  }
+}

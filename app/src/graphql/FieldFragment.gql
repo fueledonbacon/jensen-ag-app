@@ -1,0 +1,13 @@
+fragment Field on Field{
+  start_date
+  soil_type
+  avg_gpm
+  du
+  wetted_area_percent
+  pre_infiltration_losses
+  canopy_cover_percent
+  soil_holding_capacity
+  rooting_depth
+  mad_percent
+  kc_type
+}

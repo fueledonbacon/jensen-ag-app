@@ -1,6 +1,9 @@
+#import "./FieldFragment.gql"
+
 query ListFields{
   listFields{
     agrian_id
     name
+    ...Field
 	}
 }
