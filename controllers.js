@@ -70,7 +70,14 @@ controllers.agrianFetch = (endpoint, topLevelKey) => async (root, { attrs, limit
   const requestURI = `${process.env.AGRIAN_HOST}${endpoint}`
 
   let data = await agrianGetRequest(requestURI)
-  let arr = get(data, topLevelKey, [])
+  let arr = []
+  while(data.meta.page < data.meta.page_count){
+    data =  await agrianGetRequest(`${requestURI}?page=${data.meta.page + 1}`)
+    let pageData = get(data, topLevelKey, [])
+    for(const page of pageData){
+      arr.push(page)
+    }
+  }
   if (Array.isArray(attrs) && attrs.length > 0) {
     for (let i = 0; i < arr.length; i++) {
       let record = {}

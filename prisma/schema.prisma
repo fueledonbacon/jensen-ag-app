@@ -28,8 +28,9 @@ model Field {
   rooting_depth           Float?
   start_date              DateTime?
   mad_percent             Float?
-  kc_type                 String?       @default("")
+  kc_type                 String?      @default("")
   water_events            WaterEvent[]
+  subscription_status     String       @default("Inactive")
 }
 
 model WaterEvent {
