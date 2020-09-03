@@ -10,4 +10,5 @@ fragment Field on Field{
   rooting_depth
   mad_percent
   kc_type
+  subscription_status
 }

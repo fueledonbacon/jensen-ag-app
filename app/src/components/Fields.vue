@@ -1,22 +1,60 @@
 <template>
   <div>
     <h1>Update field</h1>
+    <v-select v-model="field" :items="fields" @change="updateFormFields(field)" label="Field" />
+    <v-menu
+      ref="menu"
+      v-model="date_menu"
+      :close-on-content-click="true"
+      transition="scale-transition"
+      offset-y
+      min-width="290px"
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <v-text-field
+          :value="update.start_date"
+          label="Start of measurements"
+          prepend-icon="mdi-calendar"
+          readonly
+          v-bind="attrs"
+          v-on="on"
+        ></v-text-field>
+      </template>
+      <v-date-picker v-model="update.start_date" no-title scrollable/>
+    </v-menu>
+    <v-select :items="plantings" v-model.number="update.kc_type" label="Planting Type" />
+    <v-text-field v-model.number="update.avg_gpm" label="Average Gallons per minute" />
+    <v-text-field v-model.number="update.soil_holding_capacity" label="Soil holding capacity" />
     <v-select
-      v-model="field"
-      :items="fields"
-      @change="updateFormFields(field)"
-      label="Field"
+      v-model="update.subscription_status"
+      label="Subscription Status"
+      :items="['Active', 'Inactive']"
     />
-    <v-date-picker v-model="update.start_date" label="Start of SMB measurements"/>
-    <v-select :items="plantings" v-model.number="update.kc_type" label="Planting Type"/>
-    <v-text-field v-model.number="update.avg_gpm" label="Average Gallons per minute"/>
-    <v-text-field v-model.number="update.du" label="Distribution uniformity"/>
-    <v-text-field v-model.number="update.wetted_area_percent" label="Wetted area %"/>
-    <v-text-field v-model.number="update.pre_infiltration_losses" label="Pre infiltration losses"/>
-    <v-text-field v-model.number="update.canopy_cover_percent" label="Canopy cover %"/>
-    <v-text-field v-model.number="update.soil_holding_capacity" label="Soil holding capacity"/>
-    <v-text-field v-model.number="update.rooting_depth" label="Rooting depth"/>
-    <v-text-field v-model.number="update.mad_percent" label="MAD %"/>
+    <v-slider v-model="du" label="Distribution uniformity">
+      <template v-slot:append>
+        <v-text-field v-model.number="update.du" />
+      </template>
+    </v-slider>
+    <v-slider label="Wetted area %" v-model="wetted_area">
+      <template v-slot:append>
+        <v-text-field v-model.number="update.wetted_area_percent" />
+      </template>
+    </v-slider>
+    <v-slider label="Pre infiltration losses" v-model="pre_infiltration_losses">
+      <template v-slot:append>
+        <v-text-field v-model.number="update.pre_infiltration_losses" />
+      </template>
+    </v-slider>
+    <v-slider label="Canopy Cover %" v-model="canopy_cover" :min="0" :max="100">
+      <template v-slot:append>
+        <v-text-field v-model.number="update.canopy_cover_percent" />
+      </template>
+    </v-slider>
+    <v-slider label="MAD %" v-model="mad_percent" :min="0" :max="100">
+      <template v-slot:append>
+        <v-text-field v-model.number="update.mad_percent" />
+      </template>
+    </v-slider>
     <v-btn @click="updateField">Update Field</v-btn>
   </div>
 </template>
@@ -24,30 +62,70 @@
 export default {
   apollo: {
     listFields: {
-      query: require('../graphql/ListFields.gql'),
-      update: data => data.listFields
-    }
+      query: require("../graphql/ListFields.gql"),
+      update: (data) => data.listFields,
+    },
   },
   computed: {
-    fields(){
-      if(!this.listFields)
-        return []
-      return this.listFields.map(field => ({
+    fields() {
+      if (!this.listFields) return [];
+      return this.listFields.map((field) => ({
         text: field.name,
-        value: field
-      }))
-    }
+        value: field,
+      }));
+    },
+    pre_infiltration_losses: {
+      get() {
+        return this.update.pre_infiltration_losses * 100;
+      },
+      set(v) {
+        this.update.pre_infiltration_losses = v / 100;
+      },
+    },
+    du: {
+      get() {
+        return this.update.du * 100;
+      },
+      set(v) {
+        this.update.du = v / 100;
+      },
+    },
+    wetted_area: {
+      get() {
+        return this.update.wetted_area_percent * 100;
+      },
+      set(v) {
+        this.update.wetted_area_percent = v / 100;
+      },
+    },
+    canopy_cover: {
+      get() {
+        return this.update.canopy_cover_percent * 100;
+      },
+      set(v) {
+        this.update.canopy_cover_percent = v / 100;
+      },
+    },
+    mad_percent: {
+      get() {
+        return this.update.mad_percent * 100;
+      },
+      set(v) {
+        this.update.mad_percent = v / 100;
+      },
+    },
   },
-  data: ()=>({
+  data: () => ({
+    date_menu: null,
     plantings: [
       {
-        text: 'Almonds',
-        value: 'almonds'
+        text: "Almonds",
+        value: "almonds",
       },
       {
-        text: 'Walnuts',
-        value: 'walnuts'
-      }
+        text: "Walnuts",
+        value: "walnuts",
+      },
     ],
     field: null,
     update: {
@@ -61,34 +139,43 @@ export default {
       rooting_depth: null,
       mad_percent: null,
       kc_type: "",
-    }
+      subscription_status: "",
+    },
   }),
   methods: {
-    updateFormFields(field){
-      for(const key in this.update){
-        this.update[key] = field[key]
+    percentSlider(key, value) {
+      this.update[key] = Number(value) / 100;
+    },
+    updateFormFields(field) {
+      for (const key in this.update) {
+        this.update[key] = field[key];
       }
     },
-    async updateField(){
-      let update = {}
-      for(const key in this.update){
-        if(this.update[key] !== null){
-          if(key == "start_date"){
-            update[key] = new Date(this.update[key])
-            continue
+    async updateField() {
+      let update = {};
+      for (const key in this.update) {
+        if (this.update[key] !== null) {
+          if (key == "start_date") {
+            update[key] = new Date(this.update[key]);
+            continue;
           }
-          update[key] = this.update[key]
+          update[key] = this.update[key];
         }
       }
       const response = await this.$apollo.mutate({
-        mutation: require('../graphql/UpdateField.gql'),
+        mutation: require("../graphql/UpdateField.gql"),
         variables: {
           id: this.field.agrian_id,
-          update
-        }
-      })
-      this.updateFormFields(response.updateField)
-    }
-  }
-}
+          update,
+        },
+      });
+      this.updateFormFields(response.updateField);
+    },
+  },
+};
 </script>
+<style>
+.v-input__slot .v-label{
+  width: 12rem;
+}
+</style>

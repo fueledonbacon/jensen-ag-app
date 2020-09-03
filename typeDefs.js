@@ -35,6 +35,7 @@ module.exports = gql`
     lat: Float
     long: Float
     soil_type: String
+    subscription_status: String
     water_holding_capacity: Float
     avg_gpm: Int
     du: Float
