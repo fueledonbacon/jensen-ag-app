@@ -2,14 +2,28 @@
   <div class="apollo-example">
     <!-- Cute tiny form -->
     <div class="form">
-      <v-select
-        :items="fields"
-        v-model="field"
-        label="Field"
-      />
+      <v-select :items="fields" v-model="field" label="Field" />
+      <v-btn @click="syncEtoValues">Sync Field Eto Values</v-btn>
       <v-row>
         <v-col>
-          <v-date-picker v-model="range" label="Dates" range/>
+          <v-menu
+            ref="menu1"
+            v-model="rangeMenu"
+            :close-on-content-click="false"
+            transition="scale-transition"
+            offset-y
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="dateFormatted"
+                label="Range"
+                prepend-icon="mdi-event"
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker range v-model="range" @change="checkRange" no-title />
+          </v-menu>
         </v-col>
       </v-row>
       <v-row>
@@ -41,6 +55,7 @@
 
 <script>
 import { justDate } from "../utilities.js";
+// import moment from "moment";
 export default {
   apollo: {
     listFields: {
@@ -56,20 +71,28 @@ export default {
           field_id: this.query.field_id,
         };
       },
-      update: (data) => data.getField,
+      update: (data) => {
+        data.getField.smb.sort((x, y) => new Date(x.date).getTime() - new Date(y.date).getTime())
+        return data.getField
+      },
     },
   },
   computed: {
+    dateFormatted() {
+      return this.range.join(" ~ ");
+    },
     fields() {
       if (!this.listFields) return [];
-      return this.listFields.map((field) => ({
-        text: field.name,
-        value: {
-          name: field.name,
-          agrian_id: field.agrian_id,
-          start_date: field.start_date,
-        },
-      }));
+      return this.listFields
+        .filter((field) => /^Active$/i.test(field.subscription_status))
+        .map((field) => ({
+          text: field.name,
+          value: {
+            name: field.name,
+            agrian_id: field.agrian_id,
+            start_date: field.start_date,
+          },
+        }));
     },
     chartOptions() {
       return {
@@ -94,6 +117,7 @@ export default {
   data() {
     const today = justDate(new Date());
     return {
+      rangeMenu: null,
       range: ["2020-03-22", today],
       field: {
         agrian_id: "3e803653-e24e-4524-9550-d79ab268137b",
@@ -107,6 +131,20 @@ export default {
     };
   },
   methods: {
+    syncEtoValues() {
+      this.$apollo.mutate({
+        mutation: require("../graphql/HarvestFieldEtoValues.gql"),
+        variables: {
+          agrian_id: this.field.agrian_id,
+        },
+      });
+    },
+    checkRange() {
+      let [a, b] = this.range;
+      if (new Date(a).getTime() > new Date(b).getTime()) {
+        this.range = [b, a];
+      }
+    },
     updateQuery() {
       this.query = {
         start_date: this.range[0],

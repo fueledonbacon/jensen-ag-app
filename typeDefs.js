@@ -17,6 +17,8 @@ module.exports = gql`
 
   type Mutation{
     syncFields: String
+    harvestEtoValues: String
+    harvestFieldEtoValues(agrian_id: String): String
     updateField(id: String, update: FieldUpdate): Field
     createWaterEvent(inputs: WaterEventInput): WaterEvent
   }
@@ -64,6 +66,7 @@ module.exports = gql`
     rooting_depth: Float
     mad_percent: Float
     kc_type: String
+    subscription_status: String
   }
 
   type Datapoint{

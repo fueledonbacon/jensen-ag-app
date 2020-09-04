@@ -147,6 +147,11 @@ export default {
       this.update[key] = Number(value) / 100;
     },
     updateFormFields(field) {
+      if(!(typeof field == "object")){
+        console.log('updateFormFields: no object passed')
+        return
+      }
+        
       for (const key in this.update) {
         this.update[key] = field[key];
       }

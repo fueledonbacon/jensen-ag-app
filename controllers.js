@@ -4,6 +4,8 @@ const controllers = module.exports;
 const FieldClass = require("./field-class")
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const moment = require('moment');
+const utilities = require('./utilities');
 const get = require('lodash/get');
 
 const agrianGetRequest = async (requestURI) => {
@@ -57,9 +59,23 @@ controllers.getField = async (root, { agrian_id, start_date, end_date }) => {
   return new FieldClass(fieldData, start_date, end_date)
 }
 
+controllers.harvestEtoValues = async () => {
+  const fields = await FieldClass.listAll()
+  for (const field of fields) {
+    await FieldClass.harvestEtoValues(field)
+  }
+  return 'OK'
+}
+
+controllers.harvestFieldEtoValues = async (root, {agrian_id}) => {
+  const field = await FieldClass.fetch(agrian_id)
+  await FieldClass.harvestEtoValues(field)
+  return 'OK'
+}
+
 controllers.listFields = async () => {
   let data = await FieldClass.listAll()
-  for(let i = 0; i < data.length; i++){
+  for (let i = 0; i < data.length; i++) {
     data[i] = new FieldClass(data[i])
   }
   return data
@@ -71,10 +87,10 @@ controllers.agrianFetch = (endpoint, topLevelKey) => async (root, { attrs, limit
 
   let data = await agrianGetRequest(requestURI)
   let arr = []
-  while(data.meta.page < data.meta.page_count){
-    data =  await agrianGetRequest(`${requestURI}?page=${data.meta.page + 1}`)
+  while (data.meta.page < data.meta.page_count) {
+    data = await agrianGetRequest(`${requestURI}?page=${data.meta.page + 1}`)
     let pageData = get(data, topLevelKey, [])
-    for(const page of pageData){
+    for (const page of pageData) {
       arr.push(page)
     }
   }
@@ -137,7 +153,7 @@ controllers.syncFields = async () => {
   return 'OK'
 }
 
-controllers.updateField = async (root, {id, update}) => {
+controllers.updateField = async (root, { id, update }) => {
   return await prisma.field.update({
     where: {
       agrian_id: id
@@ -146,7 +162,7 @@ controllers.updateField = async (root, {id, update}) => {
   })
 }
 
-controllers.createWaterEvent = async (root, {inputs}) => {
+controllers.createWaterEvent = async (root, { inputs }) => {
   return await prisma.waterEvent.create({
     data: {
       date: inputs.date,

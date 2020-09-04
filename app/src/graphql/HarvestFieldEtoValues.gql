@@ -1,0 +1,4 @@
+
+mutation HarvestFieldEtoValues($agrian_id: String){
+  harvestFieldEtoValues(agrian_id: $agrian_id)
+}

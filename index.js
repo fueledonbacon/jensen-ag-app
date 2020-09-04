@@ -38,7 +38,7 @@ const resolvers = {
     cimis: controllers.cimisFetch,
     eto: controllers.eto,
     field: controllers.agrianFetchRecord("/core/fields", "field"),
-    // fields: controllers.agrianFetch("/core/fields", "fields"),
+    fields: controllers.agrianFetch("/core/fields", "fields"),
     // farms: controllers.agrianFetch("/core/farms", "farms"),
     // growers: controllers.agrianFetch("/core/growers", "growers"),
     // plantings: controllers.agrianFetch("/core/plantings", "plantings"),
@@ -49,6 +49,8 @@ const resolvers = {
     syncFields: controllers.syncFields,
     updateField: controllers.updateField,
     createWaterEvent: controllers.createWaterEvent,
+    harvestEtoValues: controllers.harvestEtoValues,
+    harvestFieldEtoValues: controllers.harvestFieldEtoValues
   }
 }
 
