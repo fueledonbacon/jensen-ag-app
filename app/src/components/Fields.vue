@@ -56,6 +56,18 @@
       </template>
     </v-slider>
     <v-btn @click="updateField">Update Field</v-btn>
+
+    <h3>Water Events</h3>
+    <v-data-table :items="field.water_events" :headers="headers">
+       <template v-slot:item.actions="{ item }">
+      <v-icon
+        small
+        @click="deleteItem(item)"
+      >
+        mdi-delete
+      </v-icon>
+    </template>
+    </v-data-table>
   </div>
 </template>
 <script>
@@ -117,6 +129,20 @@ export default {
   },
   data: () => ({
     date_menu: null,
+    headers: [
+      {
+        text: "Date",
+        value: "date"
+      },
+      {
+        text: "Type",
+        value: "type"
+      },
+      {
+        text: "Duration (hrs)",
+        value: "duration_hours"
+      },
+    ],
     plantings: [
       {
         text: "Almonds",
@@ -127,7 +153,9 @@ export default {
         value: "walnuts",
       },
     ],
-    field: null,
+    field: {
+      water_events: []
+    },
     update: {
       start_date: null,
       avg_gpm: null,
@@ -143,6 +171,9 @@ export default {
     },
   }),
   methods: {
+    deleteItem(item){
+      console.log(item)
+    },
     percentSlider(key, value) {
       this.update[key] = Number(value) / 100;
     },

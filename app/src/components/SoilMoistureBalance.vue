@@ -17,7 +17,7 @@
               <v-text-field
                 v-model="dateFormatted"
                 label="Range"
-                prepend-icon="mdi-event"
+                prepend-icon="mdi-calendar"
                 v-bind="attrs"
                 v-on="on"
               ></v-text-field>

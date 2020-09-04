@@ -21,6 +21,7 @@ module.exports = gql`
     harvestFieldEtoValues(agrian_id: String): String
     updateField(id: String, update: FieldUpdate): Field
     createWaterEvent(inputs: WaterEventInput): WaterEvent
+    createWaterEvents(inputs: [WaterEventInput]): String
   }
 
   type Field{

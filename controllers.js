@@ -74,7 +74,7 @@ controllers.harvestFieldEtoValues = async (root, {agrian_id}) => {
 }
 
 controllers.listFields = async () => {
-  let data = await FieldClass.listAll()
+  let data = await FieldClass.listAll(true)
   for (let i = 0; i < data.length; i++) {
     data[i] = new FieldClass(data[i])
   }
@@ -175,4 +175,22 @@ controllers.createWaterEvent = async (root, { inputs }) => {
       }
     }
   })
+}
+
+controllers.createWaterEvents = async (root, { inputs }) => {
+  for(const event of inputs){
+    await prisma.waterEvent.create({
+      data: {
+        date: event.date,
+        type: event.type,
+        duration_hours: event.duration_hours,
+        field: {
+          connect: {
+            agrian_id: event.agrian_field_id
+          }
+        }
+      }
+    })
+  }
+  return 'OK'
 }
