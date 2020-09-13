@@ -12,8 +12,8 @@ const kc_value = (type, date, index = 0) => {
   const d = moment(date).date()
   let value = null
   for (const kc of collection) {
-    const kcm = moment(kc.date).month()
-    const kcd = moment(kc.date).date()
+    const kcm = moment(new Date(kc.date)).month()
+    const kcd = moment(new Date(kc.date)).date()
     if (kcm > m || (kcm == m && kcd >= d)) {
       break
     }
@@ -43,7 +43,8 @@ module.exports = class Field {
     Object.assign(this, field)
     this.startDate = startDate || this.start_date
     this.endDate = endDate || utilities.justDate(new Date())
-    this.cache = new Map()
+    this.et_values = get(this, 'et_values', [])
+    this.et_values.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())
   }
 
   static async harvestEtoValues(field) {
@@ -86,7 +87,7 @@ module.exports = class Field {
   }
 
   irrigation_rate_in_hr() {
-    return 96.3 / 43560 * this.avg_gpm / this.area
+    return 96.3 / 43560 * this.avg_gpm / (this.area / this.irrigated_blocks)
   }
   mad() {
     return -1 * this.soil_holding_capacity * this.mad_percent
@@ -94,54 +95,44 @@ module.exports = class Field {
   irrigation_efficiency() {
     return this.du * (1 - this.pre_infiltration_losses)
   }
-  async eto() {
+  eto() {
     let data = get(this, 'et_values', [])
-    if (!(this.startDate && this.endDate)) 
-      return []
-
     let start = new Date(this.startDate).getTime()
     let end = new Date(this.endDate).getTime()
-    data.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     data = data.filter(et => {
-      const etDate = new Date(et.date).getTime()
-      return etDate >= start && etDate <= end
+      const curr = new Date(et.date).getTime()
+      return curr >= start && curr <= end
     })
-    //   data = await controllers.eto(null, this)
-    this.cache.set("eto_values", data)
-    // }
+
     return data
   }
-  async etc() {
-    if (this.cache.has("etc_values"))
-      return this.cache.get("etc_values")
-    let eto_arr = (this.cache.has("eto_values")) ? this.cache.get("eto_values") : await this.eto()
-
-    let data = new Array(eto_arr.length)
-    for (const [i, { date, value: eto }] of eto_arr.entries()) {
+  etc() {
+    let result = []
+    for (const { date, value: eto } of this.eto()) {
       let record = { date }
       const kc = kc_value(this.kc_type, date)
       record.value = Number(eto) * kc * this.canopy_cover_percent
-      data[i] = record
+      result.push(record)
     }
-    this.cache.set("etc_values", data)
-    return data
+    return result
   }
-  async smb() {
-    const etc_values = (this.cache.has("etc_values")) ? this.cache.get("etc_values") : await this.etc()
+  smb() {
     let events = new Map()
     for (const e of this.water_events) {
       events.set(utilities.justDate(e.date), e)
     }
-    let result = [{ date: null, value: 0 }]
-    for (const [i, { date, value }] of etc_values.entries()) {
+    let result = [{ date: moment(this.startDate).subtract(1, 'day').format('YYYY-MM-DD'), value: 0 }]
+    for (const { date, value } of this.etc()) {
       let adjustment = 0
-      if (events.has(date)) {
-        const { duration_hours } = events.get(date)
+      const dateKey = utilities.justDate(date)
+      if (events.has(dateKey)) {
+        const { duration_hours } = events.get(dateKey)
         adjustment = duration_hours * this.irrigation_rate_in_hr() * this.irrigation_efficiency()
       }
+      const last = result[result.length - 1]
       let record = {
         date,
-        value: Math.min(Number(result[i].value) - Number(value) + adjustment, 0)
+        value: Math.max(Math.min(Number(last.value) - Number(value) + adjustment, 0), -1 * this.depletion_limit)
       }
       result.push(record)
     }

@@ -24,7 +24,9 @@
     </v-menu>
     <v-select :items="plantings" v-model.number="update.kc_type" label="Planting Type" />
     <v-text-field v-model.number="update.avg_gpm" label="Average Gallons per minute" />
-    <v-text-field v-model.number="update.soil_holding_capacity" label="Soil holding capacity" />
+    <v-text-field v-model.number="update.irrigated_blocks" label="Number of irrigated blocks" />
+    <v-text-field v-model.number="update.soil_holding_capacity" label="Soil holding capacity (in)" />
+    <v-text-field v-model.number="update.depletion_limit" label="Soil depletion limit (in)" />
     <v-select
       v-model="update.subscription_status"
       label="Subscription Status"
@@ -168,6 +170,8 @@ export default {
       mad_percent: null,
       kc_type: "",
       subscription_status: "",
+      irrigated_blocks: null,
+      depletion_limit: null,
     },
   }),
   methods: {

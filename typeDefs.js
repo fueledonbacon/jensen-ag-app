@@ -21,6 +21,7 @@ module.exports = gql`
     harvestFieldEtoValues(agrian_id: String): String
     updateField(id: String, update: FieldUpdate): Field
     createWaterEvent(inputs: WaterEventInput): WaterEvent
+    deleteWaterEvent(id: Int): WaterEvent
     createWaterEvents(inputs: [WaterEventInput]): String
   }
 
@@ -41,12 +42,14 @@ module.exports = gql`
     subscription_status: String
     water_holding_capacity: Float
     avg_gpm: Int
+    irrigated_blocks: Int
     du: Float
     area: Float
     wetted_area_percent: Float
     pre_infiltration_losses: Float
     canopy_cover_percent: Float
     soil_holding_capacity: Float
+    depletion_limit: Float
     rooting_depth: Float
     mad_percent: Float
     kc_type: String
@@ -64,10 +67,12 @@ module.exports = gql`
     pre_infiltration_losses: Float
     canopy_cover_percent: Float
     soil_holding_capacity: Float
+    depletion_limit: Float
     rooting_depth: Float
     mad_percent: Float
     kc_type: String
     subscription_status: String
+    irrigated_blocks: Int
   }
 
   type Datapoint{

@@ -11,4 +11,6 @@ fragment Field on Field{
   mad_percent
   kc_type
   subscription_status
+  depletion_limit
+  irrigated_blocks
 }

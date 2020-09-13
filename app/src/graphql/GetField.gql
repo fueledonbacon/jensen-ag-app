@@ -1,7 +1,7 @@
 #import "./FieldFragment.gql"
 
-query ListFields{
-  listFields{
+query GetField($agrian_id: String){
+  getField(agrian_id: $agrian_id){
     agrian_id
     name
     ...Field

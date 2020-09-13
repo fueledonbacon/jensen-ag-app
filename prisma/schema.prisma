@@ -32,6 +32,8 @@ model Field {
   water_events            WaterEvent[]
   et_values               ETValue[]
   subscription_status     String       @default("Inactive")
+  irrigated_blocks        Int @default(1)
+  depletion_limit         Float @default(10.0)
 }
 
 model ETValue {

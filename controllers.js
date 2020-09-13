@@ -176,6 +176,13 @@ controllers.createWaterEvent = async (root, { inputs }) => {
     }
   })
 }
+controllers.deleteWaterEvent = async (root, { id }) => {
+  return await prisma.waterEvent.delete({
+    where: {
+      id
+    }
+  })
+}
 
 controllers.createWaterEvents = async (root, { inputs }) => {
   for(const event of inputs){
