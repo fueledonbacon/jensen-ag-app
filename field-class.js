@@ -44,7 +44,7 @@ module.exports = class Field {
     this.startDate = startDate || this.start_date
     this.endDate = endDate || utilities.justDate(new Date())
     this.et_values = get(this, 'et_values', [])
-    this.et_values.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    this.et_values.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   }
 
   static async harvestEtoValues(field) {
@@ -55,7 +55,9 @@ module.exports = class Field {
       startDate = moment(endDate).subtract(30, 'days').format('YYYY-MM-DD')
       try {
         console.log(`month: ${moment(startDate).month()}, field: ${field.agrian_id}`)
-        const eto_values = await new Field(field, startDate, endDate).eto()
+        field.startDate = startDate
+        field.endDate = endDate
+        const eto_values = await controllers.eto(null, field)
         for (const eto of eto_values) {
           const date = moment(eto.date).format('YYYY-MM-DD')
           await prisma.eTValue.upsert({
@@ -82,6 +84,57 @@ module.exports = class Field {
       }
       await utilities.timeout(2000)
     } while (moment(startDate).month() > 1)
+
+    return 'OK'
+  }
+
+  static async updateEtoValues(field) {
+    const last = get(field, 'et_values.length', 0) - 1
+    if(last < 0){
+      console.log(`No ET values associated with field ${field.agrian_id}`)
+      return 
+    }
+    const lastDate = field.et_values[last].date
+    let endDate = moment().startOf('day').subtract(1, 'day').format('YYYY-MM-DD')
+    let startDate = moment(new Date(lastDate)).format('YYYY-MM-DD')
+    if(new Date(startDate).getTime() >= new Date(endDate).getTime()){
+      console.log(`field: ${field.agrian_id} already up to date`)
+      return 
+    }
+    if(new Date(endDate).getTime() - new Date(startDate).getTime() > 90 * 24 * 60 * 60 * 1000){
+      console.log(`More than 90 days of data missing, getting 90 days ${field.agrian_id}`)
+      startDate = moment(new Date(endDate)).subtract(90, 'days').format('YYYY-MM-DD')
+    }
+    console.log(`field: ${field.agrian_id}, start: ${startDate}, end: ${endDate}`)
+    try {
+      field.startDate = startDate
+      field.endDate = endDate
+      const eto_values = await controllers.eto(null, field)
+      for (const eto of eto_values) {
+        const date = moment(eto.date).format('YYYY-MM-DD')
+        console.log(`date: ${date}, value: ${eto.value}`)
+        await prisma.eTValue.upsert({
+          where: {
+            key: `${field.agrian_id}:${date}`
+          },
+          update: {
+            value: Number(eto.value)
+          },
+          create: {
+            key: `${field.agrian_id}:${date}`,
+            date: new Date(date),
+            value: Number(eto.value),
+            field: {
+              connect: {
+                agrian_id: field.agrian_id
+              }
+            }
+          }
+        })
+      }
+    } catch (e) {
+      console.log(e)
+    }
 
     return 'OK'
   }

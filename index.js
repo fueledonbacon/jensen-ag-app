@@ -52,7 +52,9 @@ const resolvers = {
     deleteWaterEvent: controllers.deleteWaterEvent,
     createWaterEvents: controllers.createWaterEvents,
     harvestEtoValues: controllers.harvestEtoValues,
-    harvestFieldEtoValues: controllers.harvestFieldEtoValues
+    harvestFieldEtoValues: controllers.harvestFieldEtoValues,
+    updateFieldEtoValues: controllers.updateFieldEtoValues,
+    updateAllEtoValues: controllers.updateAllEtoValues
   }
 }
 

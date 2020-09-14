@@ -19,6 +19,8 @@ module.exports = gql`
     syncFields: String
     harvestEtoValues: String
     harvestFieldEtoValues(agrian_id: String): String
+    updateFieldEtoValues(agrian_id: String): String
+    updateAllEtoValues: String
     updateField(id: String, update: FieldUpdate): Field
     createWaterEvent(inputs: WaterEventInput): WaterEvent
     deleteWaterEvent(id: Int): WaterEvent

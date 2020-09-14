@@ -73,6 +73,20 @@ controllers.harvestFieldEtoValues = async (root, {agrian_id}) => {
   return 'OK'
 }
 
+controllers.updateAllEtoValues = async () => {
+  const fields = await FieldClass.listAll(false, true)
+  for (const field of fields) {
+    await FieldClass.updateEtoValues(field)
+  }
+  return 'OK'
+}
+
+controllers.updateFieldEtoValues = async (root, {agrian_id}) => {
+  const field = await FieldClass.fetch(agrian_id)
+  await FieldClass.updateEtoValues(field)
+  return 'OK'
+}
+
 controllers.listFields = async () => {
   let data = await FieldClass.listAll(true)
   for (let i = 0; i < data.length; i++) {
