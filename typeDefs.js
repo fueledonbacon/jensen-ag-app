@@ -11,7 +11,7 @@ module.exports = gql`
     farms(attrs: [String], limit: Int): JSON
     growers(attrs: [String], limit: Int): JSON
     plantings(attrs: [String], limit: Int): JSON
-    getField(agrian_id: String, start_date: String, end_date: String): Field
+    getField(agrian_id: String): Field
     listFields: [Field]
   }
 
@@ -32,6 +32,7 @@ module.exports = gql`
     agrian_id: String
     agrian_data: JSON
     start_date: Date
+    end_date: Date
     mad: Float
     irrigation_efficiency: Float
     etc: [Datapoint]

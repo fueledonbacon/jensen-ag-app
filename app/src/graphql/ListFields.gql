@@ -4,6 +4,7 @@ query ListFields{
   listFields{
     agrian_id
     name
+    end_date
     ...Field
     water_events{
       id

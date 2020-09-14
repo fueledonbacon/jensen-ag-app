@@ -2,8 +2,7 @@
   <div class="apollo-example">
     <!-- Cute tiny form -->
     <div class="form">
-      <v-select :items="fields" v-model="field" label="Field" />
-      <v-btn @click="syncEtoValues">Sync Field Eto Values</v-btn>
+      <v-select :items="fields" v-model="field" @change="selectField" label="Field" />
       <v-row>
         <v-col>
           <v-menu
@@ -24,11 +23,6 @@
             </template>
             <v-date-picker range v-model="range" @change="checkRange" no-title />
           </v-menu>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-btn @click="updateQuery">Fetch</v-btn>
         </v-col>
       </v-row>
     </div>
@@ -54,7 +48,6 @@
 </template>
 
 <script>
-import { justDate } from "../utilities.js";
 // import moment from "moment";
 export default {
   apollo: {
@@ -66,13 +59,10 @@ export default {
       query: require("../graphql/GetSoilMoistureBalance.gql"),
       variables() {
         return {
-          start_date: this.query.start_date,
-          end_date: this.query.end_date,
-          field_id: this.query.field_id,
+          field_id: this.field.agrian_id,
         };
       },
       update: (data) => {
-        data.getField.smb.sort((x, y) => new Date(x.date).getTime() - new Date(y.date).getTime())
         return data.getField
       },
     },
@@ -87,11 +77,7 @@ export default {
         .filter((field) => /^Active$/i.test(field.subscription_status))
         .map((field) => ({
           text: field.name,
-          value: {
-            name: field.name,
-            agrian_id: field.agrian_id,
-            start_date: field.start_date,
-          },
+          value: field
         }));
     },
     chartOptions() {
@@ -115,29 +101,20 @@ export default {
     },
   },
   data() {
-    const today = justDate(new Date());
     return {
       rangeMenu: null,
-      range: ["2020-03-22", today],
+      range: [],
       field: {
         agrian_id: "3e803653-e24e-4524-9550-d79ab268137b",
-        start_date: "2020-03-22",
-      },
-      query: {
-        field_id: "3e803653-e24e-4524-9550-d79ab268137b",
-        start_date: "2020-03-22",
-        end_date: today,
       },
     };
   },
   methods: {
-    syncEtoValues() {
-      this.$apollo.mutate({
-        mutation: require("../graphql/HarvestFieldEtoValues.gql"),
-        variables: {
-          agrian_id: this.field.agrian_id,
-        },
-      });
+    selectField(){
+      this.range = [
+        this.field.start_date,
+        this.field.end_date
+      ]
     },
     checkRange() {
       let [a, b] = this.range;
@@ -147,14 +124,18 @@ export default {
     },
     updateQuery() {
       this.query = {
-        start_date: this.range[0],
-        end_date: this.range[1],
         field_id: this.field.agrian_id,
       };
     },
     getCategories() {
       if (this.$apollo.queries.chartData.loading) return [];
-      let categories = this.chartData.smb.map(({ date }) => date);
+      let categories = this.chartData.smb
+        .filter(item => {
+          let [start, end] = this.range
+          const t  = new Date(item.date).getTime()
+          return new Date(start).getTime() <= t && new Date(end).getTime() >= t
+        })
+        .map(({ date }) => date);
       return categories;
     },
     getSeries() {
@@ -165,7 +146,13 @@ export default {
             data: [],
           },
         ];
-      let smb = this.chartData.smb.map(({ value }) => value);
+      let smb = this.chartData.smb
+        .filter(item => {
+          let [start, end] = this.range
+          const t  = new Date(item.date).getTime()
+          return new Date(start).getTime() <= t && new Date(end).getTime() >= t
+        })
+        .map(({ value }) => value);
       let mad = new Array(smb.length).fill(this.chartData.mad);
       return [
         {

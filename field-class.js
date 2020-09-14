@@ -39,13 +39,17 @@ module.exports = class Field {
     return data
   }
 
-  constructor(field, startDate, endDate) {
+  constructor(field) {
     field.et_values = get(field, 'et_values', [])
     field.et_values.sort((a,b) => a.date.getTime() - b.date.getTime())
+    this.et_values = field.et_values
     Object.assign(this, field)
-    this.startDate = startDate || this.start_date
-    this.endDate = endDate || utilities.justDate(new Date())
+    if(field.et_values.length > 0){
+      let start = Math.max(new Date(field.start_date).getTime(), new Date(field.et_values[0].date).getTime())
+      this.start_date = moment(new Date(start)).format('YYYY-MM-DD')
+    }
   }
+
 
   static async harvestEtoValues(field) {
     
@@ -55,9 +59,12 @@ module.exports = class Field {
       startDate = moment(endDate).subtract(30, 'days').format('YYYY-MM-DD')
       try {
         console.log(`month: ${moment(startDate).month()}, field: ${field.agrian_id}`)
-        field.startDate = startDate
-        field.endDate = endDate
-        const eto_values = await controllers.eto(null, field)
+        const eto_values = await controllers.eto(null, {
+          lat: field.lat,
+          long: field.long,
+          startDate,
+          endDate
+        })
         for (const eto of eto_values) {
           const date = moment(eto.date).format('YYYY-MM-DD')
           await prisma.eTValue.upsert({
@@ -90,17 +97,16 @@ module.exports = class Field {
 
   static async updateEtoValues(field) {
     const last = get(field, 'et_values.length', 0) - 1
-    let lastDate
-    let startDate
-    const endDate = moment().startOf('day').subtract(2, 'day').format('YYYY-MM-DD')
 
     if(last < 0){
       console.log(`No ET values associated with field ${field.agrian_id}`)
-      startDate = moment(new Date(endDate)).subtract(90, 'days').format('YYYY-MM-DD')
-    } else {
-      lastDate = field.et_values[last].date
-      startDate = moment(new Date(lastDate)).subtract(1, 'day').format('YYYY-MM-DD')
-    }
+      await Field.harvestEtoValues(field)
+      return
+    } 
+
+    const endDate = moment().startOf('day').subtract(2, 'day').format('YYYY-MM-DD')
+    const lastDate = field.et_values[last].date
+    let startDate = moment(new Date(lastDate)).subtract(1, 'day').format('YYYY-MM-DD')
 
     if(new Date(endDate).getTime() - new Date(startDate).getTime() > 90 * 24 * 60 * 60 * 1000){
       console.log(`More than 90 days of data missing, getting 90 days ${field.name}, id: ${field.agrian_id}`)
@@ -111,11 +117,15 @@ module.exports = class Field {
       console.log(`field: ${field.agrian_id} already up to date`)
       return 
     }
+
     console.log(`field: ${field.agrian_id}, start: ${startDate}, end: ${endDate}`)
     try {
-      field.startDate = startDate
-      field.endDate = endDate
-      const eto_values = await controllers.eto(null, field)
+      const eto_values = await controllers.eto(null, {
+        lat: field.lat,
+        long: field.long,
+        startDate,
+        endDate
+      })
       for (const eto of eto_values) {
         const date = moment(eto.date).format('YYYY-MM-DD')
         console.log(`date: ${date}, value: ${eto.value}`)
@@ -144,6 +154,12 @@ module.exports = class Field {
 
     return 'OK'
   }
+  
+  end_date(){
+    if(this.et_values.length > 0)
+      return this.et_values.slice(-1)[0].date
+    return new Date(moment().startOf('day').subtract(2, 'days').format('YYYY-MM-DD'))
+  }
 
   irrigation_rate_in_hr() {
     return 96.3 / 43560 * this.avg_gpm / (this.area / this.irrigated_blocks)
@@ -156,8 +172,8 @@ module.exports = class Field {
   }
   eto() {
     let data = get(this, 'et_values', [])
-    let start = new Date(this.startDate).getTime()
-    let end = new Date(this.endDate).getTime()
+    let start = new Date(this.start_date).getTime()
+    let end = new Date(this.end_date()).getTime()
     data = data.filter(et => {
       const curr = new Date(et.date).getTime()
       return curr >= start && curr <= end
@@ -180,7 +196,7 @@ module.exports = class Field {
     for (const e of this.water_events) {
       events.set(utilities.justDate(e.date), e)
     }
-    let result = [{ date: moment(this.startDate).subtract(1, 'day').format('YYYY-MM-DD'), value: 0 }]
+    let result = [{ date: moment(this.start_date).subtract(1, 'day').format('YYYY-MM-DD'), value: 0 }]
     for (const { date, value } of this.etc()) {
       let adjustment = 0
       const dateKey = utilities.justDate(date)
