@@ -11,6 +11,7 @@ const app = express()
 const controllers = require('./controllers');
 const utilities = require('./utilities')
 const typeDefs = require('./typeDefs')
+const cron = require('node-cron')
 
 app.use(bodyParser.json())
 app.use('/', express.static(path.join(__dirname, 'app/dist')))
@@ -76,3 +77,5 @@ app.get('/', (req, res) => {
 app.listen(process.env.PORT,() => {
   console.log(`Listening on ${process.env.PORT}`)
 })
+
+cron.schedule('0 3 * * * ', controllers.updateAllEtoValues)

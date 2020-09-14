@@ -40,11 +40,11 @@ module.exports = class Field {
   }
 
   constructor(field, startDate, endDate) {
+    field.et_values = get(field, 'et_values', [])
+    field.et_values.sort((a,b) => a.date.getTime() - b.date.getTime())
     Object.assign(this, field)
     this.startDate = startDate || this.start_date
     this.endDate = endDate || utilities.justDate(new Date())
-    this.et_values = get(this, 'et_values', [])
-    this.et_values.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   }
 
   static async harvestEtoValues(field) {
@@ -90,20 +90,26 @@ module.exports = class Field {
 
   static async updateEtoValues(field) {
     const last = get(field, 'et_values.length', 0) - 1
+    let lastDate
+    let startDate
+    const endDate = moment().startOf('day').subtract(2, 'day').format('YYYY-MM-DD')
+
     if(last < 0){
       console.log(`No ET values associated with field ${field.agrian_id}`)
-      return 
+      startDate = moment(new Date(endDate)).subtract(90, 'days').format('YYYY-MM-DD')
+    } else {
+      lastDate = field.et_values[last].date
+      startDate = moment(new Date(lastDate)).subtract(1, 'day').format('YYYY-MM-DD')
     }
-    const lastDate = field.et_values[last].date
-    let endDate = moment().startOf('day').subtract(1, 'day').format('YYYY-MM-DD')
-    let startDate = moment(new Date(lastDate)).format('YYYY-MM-DD')
+
+    if(new Date(endDate).getTime() - new Date(startDate).getTime() > 90 * 24 * 60 * 60 * 1000){
+      console.log(`More than 90 days of data missing, getting 90 days ${field.name}, id: ${field.agrian_id}`)
+      startDate = moment(new Date(endDate)).subtract(90, 'days').format('YYYY-MM-DD')
+    }
+
     if(new Date(startDate).getTime() >= new Date(endDate).getTime()){
       console.log(`field: ${field.agrian_id} already up to date`)
       return 
-    }
-    if(new Date(endDate).getTime() - new Date(startDate).getTime() > 90 * 24 * 60 * 60 * 1000){
-      console.log(`More than 90 days of data missing, getting 90 days ${field.agrian_id}`)
-      startDate = moment(new Date(endDate)).subtract(90, 'days').format('YYYY-MM-DD')
     }
     console.log(`field: ${field.agrian_id}, start: ${startDate}, end: ${endDate}`)
     try {
