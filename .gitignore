@@ -3,3 +3,4 @@ node_modules
 prisma/migrations
 .vscode
 prisma/*.db
+*.pem
