@@ -1,63 +1,20 @@
 require('dotenv').config()
-const { ApolloServer, gql } = require('apollo-server')
 const store = require('./store')
-const { GraphQLJSON, GraphQLJSONObject } = require('graphql-type-json')
+const { GraphQLJSON } = require('graphql-type-json')
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
+const bodyParser = require('body-parser')
+const express = require('express')
+const { ApolloServer } = require('apollo-server-express')
+const path = require('path')
+const app = express()
 const controllers = require('./controllers');
+const utilities = require('./utilities')
+const typeDefs = require('./typeDefs')
+const cron = require('node-cron')
 
-const typeDefs = gql`
-  scalar Date
-  scalar JSON
-  scalar JSONObject
-
-  type Query{
-    soilMoistureBalance(fieldId: Int!, start: Date, end: Date): SoilMoistureBalanceData
-    cimis(filters: JSONObject): JSONObject
-    dailyEto(station: Int, startDate: String, endDate: String): [Float]
-  }
-
-  type Grower{
-    id: ID!
-    name: String,
-    farms: [Farm]
-  }
-
-  type Farm{
-    id: ID!
-    fields: [Field]
-    name: String
-  }
-
-  type Field{
-    id: ID!
-    plantings: [Planting]
-  }
-
-  type Planting{
-    id: ID!
-    name: String
-    type: String
-    variety: String
-    plantingDate: Date
-  }
-
-  type Measurement{
-    id: ID!
-    type: String
-    date: Date
-    value: Float
-  }
-
-  type SoilMoistureBalanceData{
-    data: [TimeSeriesDatapoint]
-  }
-
-  type TimeSeriesDatapoint{
-    date: Date
-    value: Float
-  }
-`
+app.use(bodyParser.json())
+app.use('/', express.static(path.join(__dirname, 'app/dist')))
 
 
 const resolvers = {
@@ -65,41 +22,60 @@ const resolvers = {
     name: 'Date',
     description: 'Date custom scalar type',
     parseValue(value) {
-      return new Date(value); // value from the client
+      return new Date(value).toISOString(); // value from the client
     },
     serialize(value) {
-      return value.getTime(); // value sent to the client
+      return utilities.justDate(new Date(value))
     },
     parseLiteral(ast) {
       if (ast.kind === Kind.INT) {
-        return new Date(+ast.value) // ast value is always in string format
+        return new Date(+ast.value).toISOString() // ast value is always in string format
       }
       return null;
     },
   }),
   JSON: GraphQLJSON,
-  JSONObject: GraphQLJSONObject,
   Query: {
-    soilMoistureBalance: () => ({
-      data: [
-        {
-          date: new Date(),
-          value: 2
-        }
-      ]
-    }),
     cimis: controllers.cimisFetch,
-    dailyEto: controllers.dailyEto
+    eto: controllers.eto,
+    field: controllers.agrianFetchRecord("/core/fields", "field"),
+    fields: controllers.agrianFetch("/core/fields", "fields"),
+    // farms: controllers.agrianFetch("/core/farms", "farms"),
+    // growers: controllers.agrianFetch("/core/growers", "growers"),
+    // plantings: controllers.agrianFetch("/core/plantings", "plantings"),
+    getField: controllers.getField,
+    listFields: controllers.listFields,
   },
+  Mutation: {
+    syncFields: controllers.syncFields,
+    updateField: controllers.updateField,
+    createWaterEvent: controllers.createWaterEvent,
+    deleteWaterEvent: controllers.deleteWaterEvent,
+    createWaterEvents: controllers.createWaterEvents,
+    harvestEtoValues: controllers.harvestEtoValues,
+    harvestFieldEtoValues: controllers.harvestFieldEtoValues,
+    updateFieldEtoValues: controllers.updateFieldEtoValues,
+    updateAllEtoValues: controllers.updateAllEtoValues
+  }
 }
 
-const server = new ApolloServer({
+const schema = new ApolloServer({
   typeDefs,
   resolvers,
-  playground: true,
+  playground: {
+    endpoint: '/graphql'
+  },
   context: store
 })
 
-server.listen(process.env.PORT).then(() => {
+schema.applyMiddleware({ app })
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'app', 'dist', 'index.html'))
+})
+
+app.listen(process.env.PORT,() => {
   console.log(`Listening on ${process.env.PORT}`)
 })
+
+cron.schedule('0 3 * * * ', controllers.updateAllEtoValues)

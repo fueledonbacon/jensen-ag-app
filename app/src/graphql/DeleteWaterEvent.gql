@@ -1,0 +1,10 @@
+
+mutation DeleteWaterEvent($id: Int){
+  deleteWaterEvent(id: $id){
+    id
+    agrian_field_id
+    duration_hours
+    type
+    date
+  }
+}

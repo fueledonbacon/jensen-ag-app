@@ -1,0 +1,11 @@
+query GetSoilMoistureBalance($field_id: String) {
+  getField(
+	 agrian_id: $field_id,
+  ){
+    mad
+    smb{
+      date
+      value
+    }
+	},
+}

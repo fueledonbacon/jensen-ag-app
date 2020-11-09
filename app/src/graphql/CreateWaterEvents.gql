@@ -1,0 +1,4 @@
+
+mutation CreateWaterEvents($inputs: [WaterEventInput]){
+  createWaterEvents(inputs: $inputs)
+}

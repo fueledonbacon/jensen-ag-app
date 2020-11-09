@@ -1,0 +1,16 @@
+#import "./FieldFragment.gql"
+
+query GetField($agrian_id: String){
+  getField(agrian_id: $agrian_id){
+    agrian_id
+    name
+    end_date
+    ...Field
+    water_events{
+      id
+      date
+      duration_hours
+      type
+    }
+	}
+}

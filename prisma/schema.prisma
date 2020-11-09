@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -10,71 +10,45 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Grower {
-  id    Int    @id @default(autoincrement())
-  farms Farm[]
-  name  String
-  auth  String @unique
-}
-
-model Farm {
-  id         Int        @id @default(autoincrement())
-  fields     Field[]
-  name       String
-  location   Location?  @relation(fields: [locationId], references: [id])
-  grower     Grower     @relation(fields: [growerId], references: [id])
-  growerId   Int
-  meta       Json
-  Planting   Planting[]
-  locationId Int?
-}
-
 model Field {
-  id                     Int        @id @default(autoincrement())
-  plantings              Planting[]
-  name                   String
-  location               Location?  @relation(fields: [locationId], references: [id])
-  lat                    Float
-  long                   Float
-  soil_type              String
-  water_holding_capacity Float
-  meta                   Json
-  farm                   Farm       @relation(fields: [farmId], references: [id])
-  farmId                 Int
-  locationId             Int?
+  id                      Int          @id @default(autoincrement())
+  agrian_id               String       @unique
+  name                    String
+  lat                     Float
+  long                    Float
+  soil_type               String?
+  water_holding_capacity  Float?
+  avg_gpm                 Int?
+  du                      Float?
+  area                    Float
+  wetted_area_percent     Float?
+  pre_infiltration_losses Float?
+  canopy_cover_percent    Float?
+  soil_holding_capacity   Float?
+  rooting_depth           Float?
+  start_date              DateTime?
+  mad_percent             Float?
+  kc_type                 String?      @default("")
+  water_events            WaterEvent[]
+  et_values               ETValue[]
+  subscription_status     String       @default("Inactive")
+  irrigated_blocks        Int @default(1)
+  depletion_limit         Float @default(10.0)
 }
 
-model Planting {
-  id           Int           @id @default(autoincrement())
-  name         String
-  planted_at   DateTime
-  measurements Measurement[]
-  field        Field          @relation(fields: [fieldId], references: [id])
-  fieldId      Int
-  meta         Json
+model ETValue {
+  key             String   @id
+  date            DateTime @default(now())
+  value           Float
+  agrian_field_id String   @default("")
+  field           Field    @relation(fields: [agrian_field_id], references: [agrian_id])
 }
 
-model Location {
-  id          Int           @id @default(autoincrement())
-  lat         Float
-  long        Float
-  name        String?
-  Farm        Farm[]
-  Field       Field[]
-  Measurement Measurement[]
-}
-
-model Measurement {
-  id         Int       @id @default(autoincrement())
-  type       String
-  source     String
-  date       DateTime
-  value      Float
-  unit       String
-  location   Location? @relation(fields: [locationId], references: [id])
-  lat        Float
-  long       Float
-  Planting   Planting? @relation(fields: [plantingId], references: [id])
-  plantingId Int?
-  locationId Int?
+model WaterEvent {
+  id              Int      @id @default(autoincrement())
+  type            String
+  date            DateTime @default(now())
+  duration_hours  Int
+  agrian_field_id String   @default("")
+  field           Field    @relation(fields: [agrian_field_id], references: [agrian_id])
 }

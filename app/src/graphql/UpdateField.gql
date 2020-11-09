@@ -1,0 +1,8 @@
+#import "./FieldFragment.gql"
+
+mutation UpdateField($id: String, $update: FieldUpdate){
+  updateField(id: $id, update: $update){
+    agrian_id
+    ...Field
+  }
+}

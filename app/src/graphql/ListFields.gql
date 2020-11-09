@@ -1,0 +1,16 @@
+#import "./FieldFragment.gql"
+
+query ListFields{
+  listFields{
+    agrian_id
+    name
+    end_date
+    ...Field
+    water_events{
+      id
+      date
+      duration_hours
+      type
+    }
+	}
+}
