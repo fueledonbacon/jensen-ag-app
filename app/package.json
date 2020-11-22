@@ -19,6 +19,7 @@
     "vuetify": "^2.2.11"
   },
   "devDependencies": {
+    "@auth0/auth0-spa-js": "^1.13.3",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-router": "^4.5.4",
