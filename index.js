@@ -8,8 +8,7 @@ const { ApolloServer } = require('apollo-server-express')
 const path = require('path')
 const cron = require('node-cron')
 const app = express()
-
-const controllers = require('./controllers');
+const resolvers = require('./resolvers');
 const utilities = require('./utils')
 const typeDefs = require('./typeDefs')
 
@@ -38,26 +37,26 @@ const resolvers = {
   }),
   JSON: GraphQLJSON,
   Query: {
-    cimis: controllers.cimisFetch,
-    eto: controllers.eto,
-    field: controllers.agrianFetchRecord("/core/fields", "field"),
-    fields: controllers.agrianFetch("/core/fields", "fields"),
-    // farms: controllers.agrianFetch("/core/farms", "farms"),
-    // growers: controllers.agrianFetch("/core/growers", "growers"),
-    // plantings: controllers.agrianFetch("/core/plantings", "plantings"),
-    getField: controllers.getField,
-    listFields: controllers.listFields,
+    cimis: resolvers.cimisFetch,
+    eto: resolvers.eto,
+    field: resolvers.agrianFetchRecord("/core/fields", "field"),
+    fields: resolvers.agrianFetch("/core/fields", "fields"),
+    // farms: resolvers.agrianFetch("/core/farms", "farms"),
+    // growers: resolvers.agrianFetch("/core/growers", "growers"),
+    // plantings: resolvers.agrianFetch("/core/plantings", "plantings"),
+    getField: resolvers.getField,
+    listFields: resolvers.listFields,
   },
   Mutation: {
-    syncFields: controllers.syncFields,
-    updateField: controllers.updateField,
-    createWaterEvent: controllers.createWaterEvent,
-    deleteWaterEvent: controllers.deleteWaterEvent,
-    createWaterEvents: controllers.createWaterEvents,
-    harvestEtoValues: controllers.harvestEtoValues,
-    harvestFieldEtoValues: controllers.harvestFieldEtoValues,
-    updateFieldEtoValues: controllers.updateFieldEtoValues,
-    updateAllEtoValues: controllers.updateAllEtoValues
+    syncFields: resolvers.syncFields,
+    updateField: resolvers.updateField,
+    createWaterEvent: resolvers.createWaterEvent,
+    deleteWaterEvent: resolvers.deleteWaterEvent,
+    createWaterEvents: resolvers.createWaterEvents,
+    harvestEtoValues: resolvers.harvestEtoValues,
+    harvestFieldEtoValues: resolvers.harvestFieldEtoValues,
+    updateFieldEtoValues: resolvers.updateFieldEtoValues,
+    updateAllEtoValues: resolvers.updateAllEtoValues
   }
 }
 
@@ -80,4 +79,4 @@ app.listen(process.env.PORT,() => {
   console.log(`Listening on ${process.env.PORT}`)
 })
 
-cron.schedule('0 3 * * * ', controllers.updateAllEtoValues)
+cron.schedule('0 3 * * * ', resolvers.updateAllEtoValues)

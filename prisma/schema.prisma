@@ -10,9 +10,18 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Grower {
+  id                      Int          @id @default(autoincrement())
+  agrian_id               String       @unique
+  email                   String?       @unique
+  fields                  Field[]
+}
+
 model Field {
   id                      Int          @id @default(autoincrement())
   agrian_id               String       @unique
+  grower                  Grower       @relation(fields: [grower_id], references: [agrian_id])
+  grower_id               String
   name                    String
   lat                     Float
   long                    Float
