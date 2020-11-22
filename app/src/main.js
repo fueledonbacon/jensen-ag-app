@@ -6,6 +6,7 @@ import { createProvider } from './vue-apollo'
 import router from './router'
 import { Auth0Plugin } from "./plugins/auth";
 import { domain, clientId } from "../auth_config.json";
+import store from './store'
 
 Vue.config.productionTip = false
 
@@ -32,6 +33,7 @@ function initializeApplication(){
     vuetify,
     apolloProvider: createProvider(),
     router,
+    store,
     render: h => h(App)
   }).$mount('#app')
 }
