@@ -1,5 +1,4 @@
 require('dotenv').config()
-const store = require('./store')
 const { GraphQLJSON } = require('graphql-type-json')
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
@@ -7,11 +6,14 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const { ApolloServer } = require('apollo-server-express')
 const path = require('path')
-const app = express()
-const controllers = require('./controllers');
-const utilities = require('./utilities')
-const typeDefs = require('./typeDefs')
 const cron = require('node-cron')
+const app = express()
+
+const controllers = require('./controllers');
+const utilities = require('./utils')
+const typeDefs = require('./typeDefs')
+
+const context = require('./context')
 
 app.use(bodyParser.json())
 app.use('/', express.static(path.join(__dirname, 'app/dist')))
@@ -65,7 +67,7 @@ const schema = new ApolloServer({
   playground: {
     endpoint: '/graphql'
   },
-  context: store
+  context
 })
 
 schema.applyMiddleware({ app })

@@ -4,7 +4,7 @@ const controllers = require('./controllers')
 const { get } = require('lodash')
 const constants = require('./constants.json')
 const moment = require('moment')
-const utilities = require('./utilities')
+const utilities = require('./utils')
 
 const kc_value = (type, date, index = 0) => {
   const collection = get(constants, `kc.${type}[${index}].values`, [])
