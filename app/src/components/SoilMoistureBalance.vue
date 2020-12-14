@@ -35,9 +35,13 @@
         <!-- Error -->
         <div v-else-if="$apollo.error" class="error apollo">An error occured</div>
 
-        <!-- Result -->
-        <div v-else-if="$apollo.queries.chartData" class="result apollo">
-          <apexchart v-if="chartData.length > 0" width="800" type="line" :options="chartOptions" :series="series" />
+        <div v-else-if="chartData" class="result apollo">
+          <apexchart
+            width="800"
+            type="line"
+            :options="chartOptions"
+            :series="series"
+          />
         </div>
 
         <!-- No result -->
@@ -63,6 +67,7 @@ export default {
         };
       },
       update: (data) => {
+        debugger
         return data?.getField || { smb: [] }
       },
     },
