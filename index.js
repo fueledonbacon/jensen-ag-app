@@ -13,12 +13,12 @@ const utilities = require('./utils')
 const typeDefs = require('./typeDefs')
 
 const context = require('./context')
-
+const cors = require("cors")
+app.use(cors())
 app.use(bodyParser.json())
 app.use('/', express.static(path.join(__dirname, 'app/dist')))
 
-
-const resolvers = {
+const resolverDefs = {
   Date: new GraphQLScalarType({
     name: 'Date',
     description: 'Date custom scalar type',
@@ -62,7 +62,7 @@ const resolvers = {
 
 const schema = new ApolloServer({
   typeDefs,
-  resolvers,
+  resolvers: resolverDefs,
   playground: {
     endpoint: '/graphql'
   },

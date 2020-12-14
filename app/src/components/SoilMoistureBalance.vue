@@ -37,7 +37,7 @@
 
         <!-- Result -->
         <div v-else-if="$apollo.queries.chartData" class="result apollo">
-          <apexchart width="800" type="line" :options="this.chartOptions" :series="this.series" />
+          <apexchart v-if="chartData.length > 0" width="800" type="line" :options="chartOptions" :series="series" />
         </div>
 
         <!-- No result -->
@@ -63,7 +63,7 @@ export default {
         };
       },
       update: (data) => {
-        return data.getField
+        return data?.getField || { smb: [] }
       },
     },
   },
@@ -97,7 +97,7 @@ export default {
       };
     },
     series() {
-      return this.getSeries();
+      return this.getSeries() || [];
     },
   },
   data() {
@@ -129,7 +129,7 @@ export default {
     },
     getCategories() {
       if (this.$apollo.queries.chartData.loading) return [];
-      let categories = this.chartData.smb
+      let categories = this.chartData?.smb
         .filter(item => {
           let [start, end] = this.range
           const t  = new Date(item.date).getTime()
@@ -146,14 +146,14 @@ export default {
             data: [],
           },
         ];
-      let smb = this.chartData.smb
+      let smb = this.chartData?.smb
         .filter(item => {
           let [start, end] = this.range
           const t  = new Date(item.date).getTime()
           return new Date(start).getTime() <= t && new Date(end).getTime() >= t
         })
-        .map(({ value }) => value);
-      let mad = new Array(smb.length).fill(this.chartData.mad);
+        .map(({ value }) => value) || [];
+      let mad = new Array(smb?.length).fill(this.chartData?.mad);
       return [
         {
           name: "Soil Moisture Balance",
