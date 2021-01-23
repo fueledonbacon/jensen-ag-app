@@ -23,7 +23,7 @@
     "lodash": "^4.17.19",
     "moment": "^2.27.0",
     "node-cron": "^2.0.3",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "query-string": "^6.13.1"
   },
   "devDependencies": {
