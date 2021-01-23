@@ -24,16 +24,20 @@ const kc_value = (type, date, index = 0) => {
 
 module.exports = class Field {
   static async fetch(agrian_id) {
-    const data = await prisma.field.findOne({ where: { agrian_id }, include: { water_events: true, et_values: true } })
+    const data = await prisma.field.findOne({
+      where: { agrian_id },
+      include: { water_events: true, et_values: true }
+    })
     return data
   }
 
-  static async listAll(water = false, eto = false) {
+  static async listAll(query = {}) {
     const options = {
       include: {
-        water_events: water,
-        et_values: eto
-      }
+        water_events: true,
+        et_values: true
+      },
+      ...query
     } 
     const data = await prisma.field.findMany(options)
     return data
