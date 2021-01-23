@@ -1,6 +1,5 @@
 <template>
   <div class="apollo-example">
-    <!-- Cute tiny form -->
     <div class="form">
       <v-select :items="fields" v-model="field" @change="selectField" label="Field" />
       <v-row>
@@ -67,9 +66,11 @@ export default {
         };
       },
       update: (data) => {
-        debugger
         return data?.getField || { smb: [] }
       },
+      skip(){
+        return !this.field?.agrian_id
+      }
     },
   },
   computed: {

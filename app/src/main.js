@@ -14,6 +14,16 @@ Vue.use(VueApexCharts)
 
 Vue.component('apexchart', VueApexCharts)
 
+const initializeApplication = () => {
+  new Vue({
+    vuetify,
+    apolloProvider: createProvider(),
+    router,
+    store,
+    render: h => h(App)
+  }).$mount('#app')
+}
+
 Vue.use(Auth0Plugin, {
   domain,
   clientId,
@@ -28,12 +38,3 @@ Vue.use(Auth0Plugin, {
   }
 });
 
-function initializeApplication(){
-  new Vue({
-    vuetify,
-    apolloProvider: createProvider(),
-    router,
-    store,
-    render: h => h(App)
-  }).$mount('#app')
-}
