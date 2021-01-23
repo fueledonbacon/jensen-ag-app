@@ -1,0 +1,8 @@
+NODE_ENV="development"
+CIMIS_APPKEY=1db1e9f9-e0f8-40e0-8203-c8de2efa0efa
+AGRIAN_API_KEY=NjYwNDRmNTgtMjM2YS0xMWU5LTgzNmItZGVlOWY2MTM3ZTNkNmVkZmY2NTYtOWQwYS00OWRiLTk1ZDEtNjcxYjVjMTRkZTE4
+AGRIAN_USERNAME=Awjensen.agriculture@gmail.com
+AGRIAN_PASSWORD=kagfe7-duCzec-birziq
+AGRIAN_HOST=https://nextgen.agrian.com
+CIMIS_HOST=http://et.water.ca.gov/api/data
+PORT=3000

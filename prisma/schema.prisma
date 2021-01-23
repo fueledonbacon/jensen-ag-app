@@ -1,13 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model Field {
@@ -29,11 +26,13 @@ model Field {
   start_date              DateTime?
   mad_percent             Float?
   kc_type                 String?      @default("")
-  water_events            WaterEvent[]
-  et_values               ETValue[]
   subscription_status     String       @default("Inactive")
-  irrigated_blocks        Int @default(1)
-  depletion_limit         Float @default(10.0)
+  irrigated_blocks        Int          @default(1)
+  depletion_limit         Float        @default(10.0)
+  et_values               ETValue[]
+  water_events            WaterEvent[]
+  grower_id               String?
+  grower                  Grower?      @relation(fields: [grower_id], references: [id])
 }
 
 model ETValue {
@@ -51,4 +50,30 @@ model WaterEvent {
   duration_hours  Int
   agrian_field_id String   @default("")
   field           Field    @relation(fields: [agrian_field_id], references: [agrian_id])
+}
+
+model User {
+  id         Int                      @id @default(autoincrement())
+  email      String                   @unique
+  auth_key   String?
+  first_name String?
+  last_name  String?
+  grower_rel UserGrowerRelationship[]
+}
+
+model UserGrowerRelationship {
+  user_id   Int
+  grower_id String
+  role      String @default("admin")
+  grower    Grower @relation(fields: [grower_id], references: [id])
+  user      User   @relation(fields: [user_id], references: [id])
+
+  @@id([user_id, grower_id])
+}
+
+model Grower {
+  id       String               @id
+  email    String?
+  user_rel UserGrowerRelationship[]
+  growers_fields   Field[]
 }
