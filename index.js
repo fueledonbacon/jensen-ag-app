@@ -8,7 +8,7 @@ const { ApolloServer } = require('apollo-server-express')
 const path = require('path')
 const app = express()
 const utilities = require('./utils')
-const typeDefs = require('./typeDefs')
+const typeDefs = require('./type-defs')
 
 require('./cron-jobs')
 
