@@ -1,6 +1,6 @@
 {
   "name": "ag-data-playground",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Data playground for agricultural data",
   "main": "index.js",
   "scripts": {
