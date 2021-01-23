@@ -6,11 +6,11 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const { ApolloServer } = require('apollo-server-express')
 const path = require('path')
-const cron = require('node-cron')
 const app = express()
-const resolvers = require('./resolvers');
 const utilities = require('./utils')
 const typeDefs = require('./typeDefs')
+
+require('./cron-jobs')
 
 const context = require('./context')
 const cors = require("cors")
@@ -18,7 +18,7 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use('/', express.static(path.join(__dirname, 'app/dist')))
 
-const resolverDefs = {
+const resolvers = {
   Date: new GraphQLScalarType({
     name: 'Date',
     description: 'Date custom scalar type',
@@ -36,33 +36,14 @@ const resolverDefs = {
     },
   }),
   JSON: GraphQLJSON,
-  Query: {
-    cimis: resolvers.cimisFetch,
-    eto: resolvers.eto,
-    field: resolvers.agrianFetchRecord("/core/fields", "field"),
-    fields: resolvers.agrianFetch("/core/fields", "fields"),
-    // farms: resolvers.agrianFetch("/core/farms", "farms"),
-    // growers: resolvers.agrianFetch("/core/growers", "growers"),
-    // plantings: resolvers.agrianFetch("/core/plantings", "plantings"),
-    getField: resolvers.getField,
-    listFields: resolvers.listFields,
-  },
-  Mutation: {
-    syncFields: resolvers.syncFields,
-    updateField: resolvers.updateField,
-    createWaterEvent: resolvers.createWaterEvent,
-    deleteWaterEvent: resolvers.deleteWaterEvent,
-    createWaterEvents: resolvers.createWaterEvents,
-    harvestEtoValues: resolvers.harvestEtoValues,
-    harvestFieldEtoValues: resolvers.harvestFieldEtoValues,
-    updateFieldEtoValues: resolvers.updateFieldEtoValues,
-    updateAllEtoValues: resolvers.updateAllEtoValues
-  }
+  Query: require('./query-resolvers'),
+  Mutation: require('./mutation-resolvers')
+  
 }
 
 const schema = new ApolloServer({
   typeDefs,
-  resolvers: resolverDefs,
+  resolvers,
   playground: {
     endpoint: '/graphql'
   },
@@ -79,4 +60,3 @@ app.listen(process.env.PORT,() => {
   console.log(`Listening on ${process.env.PORT}`)
 })
 
-cron.schedule('0 3 * * * ', resolvers.updateAllEtoValues)
