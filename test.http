@@ -63,8 +63,8 @@ Accept: application/json
 #   }
 # }
 
-@agrian_api_key_created={{createAPIKey.response.body.api_key.key}}
-@agrian_api_key={{$dotenv AGRIAN_API_KEY}}
+@agrian_api_key={{createAPIKey.response.body.api_key.key}}
+@agrian_api_key_env={{$dotenv AGRIAN_API_KEY}}
 
 ### CIMIS data
 @cimis_api_key={{$dotenv CIMIS_APPKEY}}
@@ -88,6 +88,13 @@ Content-Type: application/json; charset=UTF-8
 ################################
 # @name listFields
 GET {{agrian}}/core/fields
+Authorization: API-KEY {{agrian_api_key}}
+Accept: application/json
+Content-Type: application/json; charset=UTF-8
+
+################################
+# @name listGrowers
+GET {{agrian}}/core/growers
 Authorization: API-KEY {{agrian_api_key}}
 Accept: application/json
 Content-Type: application/json; charset=UTF-8
