@@ -1,6 +1,8 @@
 .env
 node_modules
-prisma/migrations
+prisma/migration*
 .vscode
 prisma/*.db
+prisma/*.csv
+prisma/*.sql
 *.pem
