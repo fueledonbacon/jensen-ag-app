@@ -26,6 +26,10 @@ utils.getClaims = (request) => {
   return null
 }
 
+utils.isAdmin = user => {
+  return ['jasproject69@gmail.com', 'ryan@fueledonbacon.com'].includes(user.email)
+}
+
 utils.justDate = (date) => date.toISOString().split('T')[0]
 
 utils.timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms))

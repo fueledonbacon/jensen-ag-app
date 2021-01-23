@@ -79,3 +79,4 @@ model Grower {
   user_rel UserGrowerRelationship[]
   growers_fields   Field[]
 }
+

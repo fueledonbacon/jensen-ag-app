@@ -24,7 +24,7 @@ const kc_value = (type, date, index = 0) => {
 
 module.exports = class Field {
   static async fetch(agrian_id) {
-    const data = await prisma.field.findOne({
+    const data = await prisma.field.findFirst({
       where: { agrian_id },
       include: { water_events: true, et_values: true }
     })

@@ -307,7 +307,7 @@ controllers.updateField = async (root, { id, update }) => {
   })
 }
 
-controllers.createWaterEvent = async (root, { inputs }) => {
+controllers.createWaterEvent = async ({ inputs }) => {
   return await prisma.waterEvent.create({
     data: {
       date: inputs.date,
@@ -322,7 +322,7 @@ controllers.createWaterEvent = async (root, { inputs }) => {
   })
 }
 
-controllers.deleteWaterEvent = async (root, { id }) => {
+controllers.deleteWaterEvent = async ({ id }) => {
   return await prisma.waterEvent.delete({
     where: {
       id
@@ -330,7 +330,7 @@ controllers.deleteWaterEvent = async (root, { id }) => {
   })
 }
 
-controllers.createWaterEvents = async (root, { inputs }) => {
+controllers.createWaterEvents = async ({ inputs }) => {
   for(const event of inputs){
     await prisma.waterEvent.create({
       data: {
