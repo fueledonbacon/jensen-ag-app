@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import VueApexCharts from 'vue-apexcharts'
-import { createProvider } from './vue-apollo'
+import { createProvider } from './plugins/apollo'
 import router from './router'
 import { Auth0Plugin } from "./plugins/auth";
 import { domain, clientId } from "../auth_config.json";
