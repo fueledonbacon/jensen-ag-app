@@ -5,7 +5,7 @@ const FieldClass = require("./field-class")
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const moment = require('moment');
-const utilities = require('./utilities');
+const utilities = require('./utils');
 const get = require('lodash/get');
 const { snakeCase } = require('change-case')
 

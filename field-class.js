@@ -1,6 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const controllers = require('./resolvers')
+const controllers = require('./controllers')
 const { get } = require('lodash')
 const constants = require('./constants.json')
 const moment = require('moment')
