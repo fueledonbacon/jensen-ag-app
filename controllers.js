@@ -237,6 +237,7 @@ controllers.agrianFetch = (endpoint, topLevelKey) => async (root, { attrs, limit
       arr.push(page)
     }
   }
+
   if (Array.isArray(attrs) && attrs.length > 0) {
     for (let i = 0; i < arr.length; i++) {
       let record = {}
@@ -320,6 +321,7 @@ controllers.createWaterEvent = async (root, { inputs }) => {
     }
   })
 }
+
 controllers.deleteWaterEvent = async (root, { id }) => {
   return await prisma.waterEvent.delete({
     where: {

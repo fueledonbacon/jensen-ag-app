@@ -7,8 +7,16 @@ module.exports = {
   fields: async (root, args, { user }) => {
     if(!get(user, 'grower.id', ''))
       throw new Error('Grower ID not defined')
-    await controllers.listFields({ where: { grower_id: user.grower.id }})
+    await controllers.listFields({
+      where: { grower_id: user.grower.id }
+    })
   },
   getField: controllers.getField,
-  listFields: controllers.listFields,
+  listFields: async (root, args, { user }) => {
+    if(!get(user, 'grower.id', ''))
+      throw new Error('Grower ID not defined')
+    return await controllers.listFields({
+      where: { grower_id: user.grower.id }
+    })
+  },
 }
