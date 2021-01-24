@@ -10,6 +10,8 @@ datasource db {
 model Field {
   id                      Int          @id @default(autoincrement())
   agrian_id               String       @unique
+  grower                  Grower       @relation(fields: [grower_id], references: [agrian_id])
+  grower_id               String
   name                    String
   lat                     Float
   long                    Float
@@ -77,3 +79,4 @@ model Grower {
   user_rel UserGrowerRelationship[]
   growers_fields   Field[]
 }
+

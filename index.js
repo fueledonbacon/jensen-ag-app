@@ -1,5 +1,4 @@
 require('dotenv').config()
-const store = require('./store')
 const { GraphQLJSON } = require('graphql-type-json')
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
@@ -8,14 +7,16 @@ const express = require('express')
 const { ApolloServer } = require('apollo-server-express')
 const path = require('path')
 const app = express()
-const controllers = require('./controllers');
-const utilities = require('./utilities')
-const typeDefs = require('./typeDefs')
-const cron = require('node-cron')
+const utilities = require('./utils')
+const typeDefs = require('./type-defs')
 
+require('./cron-jobs')
+
+const context = require('./context')
+const cors = require("cors")
+app.use(cors())
 app.use(bodyParser.json())
 app.use('/', express.static(path.join(__dirname, 'app/dist')))
-
 
 const resolvers = {
   Date: new GraphQLScalarType({
@@ -35,25 +36,9 @@ const resolvers = {
     },
   }),
   JSON: GraphQLJSON,
-  Query: {
-    cimis: controllers.cimisFetch,
-    eto: controllers.eto,
-    field: controllers.agrianFetchRecord("/core/fields", "field"),
-    fields: controllers.agrianFetch("/core/fields", "fields"),
-    getField: controllers.getField,
-    listFields: controllers.listFields,
-  },
-  Mutation: {
-    syncFields: controllers.syncFields,
-    updateField: controllers.updateField,
-    createWaterEvent: controllers.createWaterEvent,
-    deleteWaterEvent: controllers.deleteWaterEvent,
-    createWaterEvents: controllers.createWaterEvents,
-    harvestEtoValues: controllers.harvestEtoValues,
-    harvestFieldEtoValues: controllers.harvestFieldEtoValues,
-    updateFieldEtoValues: controllers.updateFieldEtoValues,
-    updateAllEtoValues: controllers.updateAllEtoValues
-  }
+  Query: require('./query-resolvers'),
+  Mutation: require('./mutation-resolvers')
+  
 }
 
 const schema = new ApolloServer({
@@ -62,7 +47,7 @@ const schema = new ApolloServer({
   playground: {
     endpoint: '/graphql'
   },
-  context: store
+  context
 })
 
 schema.applyMiddleware({ app })
@@ -75,4 +60,3 @@ app.listen(process.env.PORT,() => {
   console.log(`Listening on ${process.env.PORT}`)
 })
 
-cron.schedule('0 3 * * * ', controllers.updateAllEtoValues)

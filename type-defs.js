@@ -13,6 +13,7 @@ module.exports = gql`
     plantings(attrs: [String], limit: Int): JSON
     getField(agrian_id: String): Field
     listFields: [Field]
+    self: JSON
   }
 
   type Mutation{

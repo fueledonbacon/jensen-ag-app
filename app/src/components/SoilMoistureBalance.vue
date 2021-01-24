@@ -1,6 +1,6 @@
 <template>
-  <div class="apollo-example">
-    <!-- Cute tiny form -->
+  <v-row>
+    <v-col>
     <div class="form">
       <v-select :items="fields" v-model="field" @change="selectField" label="Field" />
       <v-row>
@@ -35,16 +35,21 @@
         <!-- Error -->
         <div v-else-if="$apollo.error" class="error apollo">An error occured</div>
 
-        <!-- Result -->
-        <div v-else-if="$apollo.queries.chartData" class="result apollo">
-          <apexchart width="800" type="line" :options="this.chartOptions" :series="this.series" />
+        <div v-else-if="chartData.smb.length > 0" class="result apollo">
+          <apexchart
+            width="800"
+            type="line"
+            :options="chartOptions"
+            :series="series"
+          />
         </div>
 
         <!-- No result -->
         <div v-else class="no-result apollo">No result :(</div>
       </v-col>
     </v-row>
-  </div>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -63,8 +68,11 @@ export default {
         };
       },
       update: (data) => {
-        return data.getField
+        return data?.getField || { smb: [] }
       },
+      skip(){
+        return !this.field?.agrian_id 
+      }
     },
   },
   computed: {
@@ -97,15 +105,24 @@ export default {
       };
     },
     series() {
-      return this.getSeries();
+      return this.getSeries() || [];
     },
+  },
+  watch: {
+    listFields(list){
+      if(Array.isArray(list) && this.$route.params.field_id){
+        this.field = list.find(field => field.agrian_id == this.$route.params.field_id)
+        this.selectField()
+      }
+    }
   },
   data() {
     return {
       rangeMenu: null,
       range: [],
+      chartData: { smb: [] },
       field: {
-        agrian_id: "3e803653-e24e-4524-9550-d79ab268137b",
+        agrian_id: this.$route?.params?.field_id,
       },
     };
   },
@@ -129,7 +146,7 @@ export default {
     },
     getCategories() {
       if (this.$apollo.queries.chartData.loading) return [];
-      let categories = this.chartData.smb
+      let categories = this.chartData?.smb
         .filter(item => {
           let [start, end] = this.range
           const t  = new Date(item.date).getTime()
@@ -152,8 +169,8 @@ export default {
           const t  = new Date(item.date).getTime()
           return new Date(start).getTime() <= t && new Date(end).getTime() >= t
         })
-        .map(({ value }) => value);
-      let mad = new Array(smb.length).fill(this.chartData.mad);
+        .map(({ value }) => value) || [];
+      let mad = new Array(smb?.length).fill(this.chartData?.mad);
       return [
         {
           name: "Soil Moisture Balance",

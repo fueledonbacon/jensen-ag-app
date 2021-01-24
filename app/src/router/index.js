@@ -9,6 +9,16 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
+    name: 'Dashboard',
+    component: require('../components/Dashboard.vue').default
+  },
+  {
+    path: '/soil-moisture-balance',
+    name: 'SoilMoistureBalance',
+    component: SoilMoistureBalance
+  },
+  {
+    path: '/soil-moisture-balance/:field_id',
     name: 'SoilMoistureBalance',
     component: SoilMoistureBalance
   },

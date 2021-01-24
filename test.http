@@ -63,8 +63,8 @@ Accept: application/json
 #   }
 # }
 
-@agrian_api_key_disable={{createAPIKey.response.body.api_key.key}}
-@agrian_api_key={{$dotenv AGRIAN_API_KEY}}
+@agrian_api_key={{createAPIKey.response.body.api_key.key}}
+@agrian_api_key_env={{$dotenv AGRIAN_API_KEY}}
 
 ### CIMIS data
 @cimis_api_key={{$dotenv CIMIS_APPKEY}}

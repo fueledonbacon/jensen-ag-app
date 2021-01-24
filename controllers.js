@@ -5,7 +5,7 @@ const FieldClass = require("./field-class")
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const moment = require('moment');
-const utilities = require('./utilities');
+const utilities = require('./utils');
 const get = require('lodash/get');
 const { snakeCase } = require('change-case')
 
@@ -115,7 +115,10 @@ controllers.harvestFieldEtoValues = async (root, {agrian_id}) => {
 }
 
 controllers.updateAllEtoValues = async () => {
-  const fields = await FieldClass.listAll(false, true)
+  const fields = await FieldClass.listAll({
+    include: { water_events: false, et_values: true }
+  })
+
   for (const field of fields) {
     await FieldClass.updateEtoValues(field)
   }
@@ -128,11 +131,16 @@ controllers.updateFieldEtoValues = async (root, {agrian_id}) => {
   return 'OK'
 }
 
-controllers.listFields = async () => {
-  let data = await FieldClass.listAll(true)
+controllers.listFields = async (query) => {
+  let data = await FieldClass.listAll(query)
   for (let i = 0; i < data.length; i++) {
     data[i] = new FieldClass(data[i])
   }
+  return data
+}
+
+controllers.listGrowers = async (query) => {
+  let data = await prisma.grower.findMany(query)
   return data
 }
 
@@ -229,6 +237,7 @@ controllers.agrianFetch = (endpoint, topLevelKey) => async (root, { attrs, limit
       arr.push(page)
     }
   }
+
   if (Array.isArray(attrs) && attrs.length > 0) {
     for (let i = 0; i < arr.length; i++) {
       let record = {}
@@ -298,7 +307,7 @@ controllers.updateField = async (root, { id, update }) => {
   })
 }
 
-controllers.createWaterEvent = async (root, { inputs }) => {
+controllers.createWaterEvent = async ({ inputs }) => {
   return await prisma.waterEvent.create({
     data: {
       date: inputs.date,
@@ -312,7 +321,8 @@ controllers.createWaterEvent = async (root, { inputs }) => {
     }
   })
 }
-controllers.deleteWaterEvent = async (root, { id }) => {
+
+controllers.deleteWaterEvent = async ({ id }) => {
   return await prisma.waterEvent.delete({
     where: {
       id
@@ -320,7 +330,7 @@ controllers.deleteWaterEvent = async (root, { id }) => {
   })
 }
 
-controllers.createWaterEvents = async (root, { inputs }) => {
+controllers.createWaterEvents = async ({ inputs }) => {
   for(const event of inputs){
     await prisma.waterEvent.create({
       data: {

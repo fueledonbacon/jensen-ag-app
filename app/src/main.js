@@ -5,12 +5,24 @@ import VueApexCharts from 'vue-apexcharts'
 import { createProvider } from './plugins/apollo'
 import router from './router'
 import { Auth0Plugin } from "./plugins/auth";
+import { domain, clientId } from "../auth_config.json";
+import store from './store'
 
 Vue.config.productionTip = false
 
 Vue.use(VueApexCharts)
 
 Vue.component('apexchart', VueApexCharts)
+
+const initializeApplication = () => {
+  new Vue({
+    vuetify,
+    apolloProvider: createProvider(),
+    router,
+    store,
+    render: h => h(App)
+  }).$mount('#app')
+}
 
 Vue.use(Auth0Plugin, {
   domain,
@@ -26,11 +38,3 @@ Vue.use(Auth0Plugin, {
   }
 });
 
-function initializeApplication(){
-  new Vue({
-    vuetify,
-    apolloProvider: createProvider(),
-    router,
-    render: h => h(App)
-  }).$mount('#app')
-}
