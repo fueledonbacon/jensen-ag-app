@@ -40,7 +40,9 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Jensen Ag Data Viewer</v-toolbar-title>
       <v-spacer/>
-      <v-btn @click="$auth.loginWithRedirect">Login</v-btn>
+
+      <v-btn v-if="!$auth.isAuthenticated" @click="$auth.loginWithRedirect">Login</v-btn>
+      <v-chip v-else>{{$auth.user.email}}</v-chip>
     </v-app-bar>
 
     <v-main>
@@ -65,8 +67,19 @@
 
 <script>
 
+import { gql } from 'graphql-tag'
+
 export default {
   name: 'App',
+  apollo: {
+    self: {
+      query: gql`query { self }`,
+      skip(){
+        return !this.$auth.idToken
+      },
+      update: state => state.self
+    }
+  },
   data: () => ({
     drawer: null
   }),

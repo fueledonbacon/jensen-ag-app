@@ -9,6 +9,11 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
+    name: 'Dashboard',
+    component: import('../components/Dashboard.vue')
+  },
+  {
+    path: '/soil-moisture-balance',
     name: 'SoilMoistureBalance',
     component: SoilMoistureBalance
   },
