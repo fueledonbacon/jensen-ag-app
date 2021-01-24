@@ -10,10 +10,15 @@ const routes = [
   {
     path: '/',
     name: 'Dashboard',
-    component: import('../components/Dashboard.vue')
+    component: require('../components/Dashboard.vue').default
   },
   {
     path: '/soil-moisture-balance',
+    name: 'SoilMoistureBalance',
+    component: SoilMoistureBalance
+  },
+  {
+    path: '/soil-moisture-balance/:field_id',
     name: 'SoilMoistureBalance',
     component: SoilMoistureBalance
   },

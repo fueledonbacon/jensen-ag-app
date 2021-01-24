@@ -1,5 +1,6 @@
 <template>
-  <div class="apollo-example">
+  <v-row>
+    <v-col>
     <div class="form">
       <v-select :items="fields" v-model="field" @change="selectField" label="Field" />
       <v-row>
@@ -34,7 +35,7 @@
         <!-- Error -->
         <div v-else-if="$apollo.error" class="error apollo">An error occured</div>
 
-        <div v-else-if="chartData" class="result apollo">
+        <div v-else-if="chartData.smb.length > 0" class="result apollo">
           <apexchart
             width="800"
             type="line"
@@ -47,7 +48,8 @@
         <div v-else class="no-result apollo">No result :(</div>
       </v-col>
     </v-row>
-  </div>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -69,7 +71,7 @@ export default {
         return data?.getField || { smb: [] }
       },
       skip(){
-        return !this.field?.agrian_id
+        return !this.field?.agrian_id 
       }
     },
   },
@@ -106,12 +108,21 @@ export default {
       return this.getSeries() || [];
     },
   },
+  watch: {
+    listFields(list){
+      if(Array.isArray(list) && this.$route.params.field_id){
+        this.field = list.find(field => field.agrian_id == this.$route.params.field_id)
+        this.selectField()
+      }
+    }
+  },
   data() {
     return {
       rangeMenu: null,
       range: [],
+      chartData: { smb: [] },
       field: {
-        agrian_id: "3e803653-e24e-4524-9550-d79ab268137b",
+        agrian_id: this.$route?.params?.field_id,
       },
     };
   },
@@ -152,7 +163,7 @@ export default {
             data: [],
           },
         ];
-      let smb = this.chartData?.smb
+      let smb = this.chartData.smb
         .filter(item => {
           let [start, end] = this.range
           const t  = new Date(item.date).getTime()

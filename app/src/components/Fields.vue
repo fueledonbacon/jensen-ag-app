@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <v-row>
+    <v-col>
     <h1>Update field</h1>
     <v-select v-model="field" :items="fields" @change="updateFormFields(field)" label="Field" />
     <v-menu
@@ -70,7 +71,8 @@
       </v-icon>
     </template>
     </v-data-table>
-  </div>
+    </v-col>
+  </v-row>
 </template>
 <script>
 export default {
