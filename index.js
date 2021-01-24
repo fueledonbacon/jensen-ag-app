@@ -1,11 +1,17 @@
-require('dotenv').config()
+const fs = require('fs')
+const path = require('path')
+const dotenv = require('dotenv')
+const result = dotenv.parse(fs.readFileSync(path.resolve(__dirname,'.env')))
+for (const k in result) {
+  process.env[k] = result[k]
+}
+
 const { GraphQLJSON } = require('graphql-type-json')
 const { GraphQLScalarType } = require('graphql');
 const { Kind } = require('graphql/language');
 const bodyParser = require('body-parser')
 const express = require('express')
 const { ApolloServer } = require('apollo-server-express')
-const path = require('path')
 const app = express()
 const utilities = require('./utils')
 const typeDefs = require('./type-defs')

@@ -5,4 +5,4 @@ AGRIAN_USERNAME=Awjensen.agriculture@gmail.com
 AGRIAN_PASSWORD=kagfe7-duCzec-birziq
 AGRIAN_HOST=https://nextgen.agrian.com
 CIMIS_HOST=http://et.water.ca.gov/api/data
-PORT=3000
+PORT=8080
